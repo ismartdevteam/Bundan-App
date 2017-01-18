@@ -1,0 +1,89 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#484848"
+    tools:context="ismartdev.mn.bundan.MatchActivity">
+
+
+    <!-- This FrameLayout insets its children based on system windows using
+         android:fitsSystemWindows. -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
+
+        <LinearLayout
+            android:id="@+id/fullscreen_content_controls"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:background="@color/black_overlay"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="18dp"
+            tools:ignore="UselessParent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/itsmatch"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="@android:color/white" />
+
+            <TextView
+                android:id="@+id/match_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="25dp"
+                android:textColor="@android:color/white" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+
+                android:orientation="horizontal">
+
+                <ismartdev.mn.bundan.util.CircleImageView
+                    android:id="@+id/match_my_pic"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:padding="18dp"
+                    app:border_color="@android:color/white"
+                    app:border_width="2dp" />
+
+                <ismartdev.mn.bundan.util.CircleImageView
+                    android:id="@+id/match_friend_pic"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:padding="18dp"
+                    app:border_color="@android:color/white"
+                    app:border_width="2dp" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/send_message"
+                android:layout_marginTop="45dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/gradient_round_pink"
+                android:padding="15dp"
+                android:text="@string/send_message"
+                android:textColor="@android:color/white" />
+
+            <Button
+                android:id="@+id/keep_swipe"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:background="@drawable/gradient_border_pink"
+                android:padding="15dp"
+                android:text="@string/keep_swiping"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+    </FrameLayout>
+
+</FrameLayout>
