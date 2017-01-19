@@ -113,7 +113,7 @@ public class TinderCard {
         callback.onSwiping();
     }
 
-    public void interactUser(final String interUid, boolean choice) {
+    private void interactUser(final String interUid, boolean choice) {
         Log.e("interUid-", interUid);
         InteractModel inter = new InteractModel(interUid, ServerValue.TIMESTAMP);
         AgeRanges ageRanges = new AgeRanges(interUid);
