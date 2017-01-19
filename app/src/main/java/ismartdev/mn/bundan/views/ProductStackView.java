@@ -339,9 +339,7 @@ public class ProductStackView extends FrameLayout{
 
                     view.setTranslationX(X - mXStart);
                     view.setTranslationY(Y - mYStart);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        view.setTranslationZ(1);
-                    }
+
                     mXDelta = X - mXStart;
                     mYDelta = Y - mYStart;
 

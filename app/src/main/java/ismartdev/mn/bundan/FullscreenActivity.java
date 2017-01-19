@@ -204,7 +204,7 @@ public class FullscreenActivity extends BaseActivity {
                         Log.e("data", response.getRawResponse() + "");
                         try {
                             addToFirebase(object, getUid());
-                            startMainAc();
+
                         } catch (JSONException e) {
                             Toast.makeText(FullscreenActivity.this, e.getMessage() + "", Toast.LENGTH_LONG).show();
                             e.printStackTrace();
@@ -310,11 +310,11 @@ public class FullscreenActivity extends BaseActivity {
         }
         editor.commit();
 
-//        try {
-//            uploadImage(uid, user.fb_id, user.gender);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            uploadImage(uid, user.fb_id, user.gender);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }
