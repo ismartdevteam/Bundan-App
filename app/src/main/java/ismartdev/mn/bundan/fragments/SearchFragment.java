@@ -120,11 +120,13 @@ public class SearchFragment extends Fragment implements View.OnClickListener, Ti
         mSwipView = (SwipePlaceHolderView) v.findViewById(R.id.swipeView);
 //        mProductStackView = (ProductStackView) v.findViewById(R.id.tinder_mProductStack);
         reference = FirebaseDatabase.getInstance().getReference();
-        url = "https://bundan-e28d3.appspot-preview.com/";
+
         mSwipView.addItemRemoveListener(new ItemRemovedListener() {
             @Override
             public void onItemRemoved(int count) {
                 Log.e(TAG,count+"--");
+
+
             }
         });
         mSwipView.getBuilder()
@@ -133,8 +135,8 @@ public class SearchFragment extends Fragment implements View.OnClickListener, Ti
 
                 .setSwipeDecor(new SwipeDecor()
                         .setPaddingTop(20)
-                        .setRelativeScale(0.01f)
-                        .setSwipeRotationAngle(20)
+                        .setSwipeRotationAngle(45)
+
                         .setSwipeInMsgLayoutId(R.layout.tinder_swipe_in_msg_view)
                         .setSwipeOutMsgLayoutId(R.layout.tinder_swipe_out_msg_view));
         sp = getActivity().getSharedPreferences(Constants.sp_search, Context.MODE_PRIVATE);
@@ -145,7 +147,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener, Ti
         String limit = sp.getString("limit", "20");
 
         apiService =
-                ApiClient.getClient(url).create(ApiInterface.class);
+                ApiClient.getClient(Constants.url).create(ApiInterface.class);
         SearchParams searchParams = new SearchParams(age_range, gender, limit, uid);
 
         Call<SearchList> call = apiService.searchPeople(searchParams);
@@ -154,8 +156,6 @@ public class SearchFragment extends Fragment implements View.OnClickListener, Ti
             public void onResponse(Call<SearchList> call, Response<SearchList> response) {
                 if (response.body().getCode() == 200) {
                     List<UserGender> searchList = response.body().getData();
-//                    UserAdapter userAdapter = new UserAdapter(getActivity(), searchList);
-//                    makeAdapter(searchList, userAdapter);
                     makeTinderList(searchList);
                 }
             }
@@ -169,42 +169,9 @@ public class SearchFragment extends Fragment implements View.OnClickListener, Ti
 
         return v;
     }
-
-    private void makeAdapter(final List<UserGender> searchList, final UserAdapter adapter) {
-        mProductStackView.setAdapter(adapter);
-
-        mProductStackView.setmProductStackListener(new ProductStackView.ProductStackListener() {
-            @Override
-            public void onUpdateProgress(boolean positif, float percent, View view) {
-                changeStateViewpager(false);
-                UserHolder userHolder = (UserHolder) view.getTag();
-                userHolder.singleProductView.onUpdateProgress(positif, percent, view);
-
-            }
-
-            @Override
-            public void onCancelled(View beingDragged) {
-                changeStateViewpager(false);
-                UserHolder userHolder = (UserHolder) beingDragged.getTag();
-                userHolder.singleProductView.onCancelled(beingDragged);
-
-            }
-
-            @Override
-            public void onChoiceMade(boolean choice, View beingDragged) {
-                UserHolder userHolder = (UserHolder) beingDragged.getTag();
-                userHolder.singleProductView.onChoiceMade(choice, beingDragged);
-                interactUser(userHolder.userGender.getUid(), choice);
-                searchList.remove(0);
-                changeStateViewpager(true);
-            }
-        });
-
-
-    }
     private  void makeTinderList(List<UserGender> userGenders){
         for (UserGender item:userGenders){
-            mSwipView.addView(new TinderCard(getActivity(),item,this));
+            mSwipView.addView(new TinderCard(uid,getActivity(),item,this,gender,age_range));
         }
 
 
