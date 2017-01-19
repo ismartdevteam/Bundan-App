@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -21,6 +22,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.lorentzos.flingswipe.SwipeFlingAdapterView;
+import com.mindorks.placeholderview.SwipeDecor;
+import com.mindorks.placeholderview.SwipePlaceHolderView;
+import com.mindorks.placeholderview.listeners.ItemRemovedListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,6 +44,7 @@ import ismartdev.mn.bundan.models.UserMatched;
 import ismartdev.mn.bundan.util.ApiClient;
 import ismartdev.mn.bundan.util.ApiInterface;
 import ismartdev.mn.bundan.util.Constants;
+import ismartdev.mn.bundan.util.TinderCard;
 import ismartdev.mn.bundan.views.ProductStackView;
 import ismartdev.mn.bundan.views.SingleProductView;
 import ismartdev.mn.bundan.views.UserHolder;
@@ -55,10 +60,11 @@ import retrofit2.Response;
  * Use the {@link SearchFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SearchFragment extends Fragment implements View.OnClickListener {
+public class SearchFragment extends Fragment implements View.OnClickListener, TinderCard.CardCallback {
     // TODO: Rename parameter arguments, choose names that match
     private static final String UID = "uid";
     private static final String URL = "url";
+    private static final String TAG = "SearchFragment";
     private static SearchFragment fragment;
     private DatabaseReference reference;
 
@@ -72,6 +78,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     private String gender;
     private String age_range;
     private ApiInterface apiService;
+    private SwipePlaceHolderView mSwipView;
 
     public SearchFragment() {
     }
@@ -102,18 +109,36 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_home, container, false);
-        Button dislike = (Button) v.findViewById(R.id.search_dislike);
-        Button like = (Button) v.findViewById(R.id.search_like);
+        ImageButton dislike = (ImageButton) v.findViewById(R.id.search_dislike);
+        ImageButton like = (ImageButton) v.findViewById(R.id.search_like);
         dislike.setOnClickListener(this);
         like.setOnClickListener(this);
-        mProductStackView = (ProductStackView) v.findViewById(R.id.tinder_mProductStack);
+        mSwipView = (SwipePlaceHolderView) v.findViewById(R.id.swipeView);
+//        mProductStackView = (ProductStackView) v.findViewById(R.id.tinder_mProductStack);
         reference = FirebaseDatabase.getInstance().getReference();
-        url = "https://bundan-e28d3.appspot-preview.com/";
 
+        mSwipView.addItemRemoveListener(new ItemRemovedListener() {
+            @Override
+            public void onItemRemoved(int count) {
+                Log.e(TAG,count+"--");
+
+
+            }
+        });
+        mSwipView.getBuilder()
+                .setDisplayViewCount(3)
+                .setSwipeType(SwipePlaceHolderView.SWIPE_TYPE_HORIZONTAL)
+
+                .setSwipeDecor(new SwipeDecor()
+                        .setPaddingTop(20)
+                        .setSwipeRotationAngle(45)
+
+                        .setSwipeInMsgLayoutId(R.layout.tinder_swipe_in_msg_view)
+                        .setSwipeOutMsgLayoutId(R.layout.tinder_swipe_out_msg_view));
         sp = getActivity().getSharedPreferences(Constants.sp_search, Context.MODE_PRIVATE);
         gender = sp.getString("gender", "female");
         // TODO: 1/14/2017 delete whe production
@@ -122,7 +147,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         String limit = sp.getString("limit", "20");
 
         apiService =
-                ApiClient.getClient(url).create(ApiInterface.class);
+                ApiClient.getClient(Constants.url).create(ApiInterface.class);
         SearchParams searchParams = new SearchParams(age_range, gender, limit, uid);
 
         Call<SearchList> call = apiService.searchPeople(searchParams);
@@ -131,8 +156,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
             public void onResponse(Call<SearchList> call, Response<SearchList> response) {
                 if (response.body().getCode() == 200) {
                     List<UserGender> searchList = response.body().getData();
-                    UserAdapter userAdapter = new UserAdapter(getActivity(), searchList);
-                    makeAdapter(searchList, userAdapter);
+                    makeTinderList(searchList);
                 }
             }
 
@@ -145,35 +169,11 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
         return v;
     }
+    private  void makeTinderList(List<UserGender> userGenders){
+        for (UserGender item:userGenders){
+            mSwipView.addView(new TinderCard(uid,getActivity(),item,this,gender,age_range));
+        }
 
-    private void makeAdapter(final List<UserGender> searchList, final UserAdapter adapter) {
-        mProductStackView.setAdapter(adapter);
-        mProductStackView.setmProductStackListener(new ProductStackView.ProductStackListener() {
-            @Override
-            public void onUpdateProgress(boolean positif, float percent, View view) {
-                changeStateViewpager(false);
-                UserHolder userHolder = (UserHolder) view.getTag();
-                userHolder.singleProductView.onUpdateProgress(positif, percent, view);
-
-            }
-
-            @Override
-            public void onCancelled(View beingDragged) {
-                changeStateViewpager(false);
-                UserHolder userHolder = (UserHolder) beingDragged.getTag();
-                userHolder.singleProductView.onCancelled(beingDragged);
-
-            }
-
-            @Override
-            public void onChoiceMade(boolean choice, View beingDragged) {
-                UserHolder userHolder = (UserHolder) beingDragged.getTag();
-                userHolder.singleProductView.onChoiceMade(choice, beingDragged);
-                interactUser(userHolder.userGender.getUid(), choice);
-                searchList.remove(0);
-                changeStateViewpager(true);
-            }
-        });
 
 
     }
@@ -264,14 +264,25 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.search_dislike:
-                mProductStackView.likeOrDislike(false);
+                mSwipView.doSwipe(false);
                 break;
 
             case R.id.search_like:
-                mProductStackView.likeOrDislike(true);
+                mSwipView.doSwipe(true);
+//                mProductStackView.likeOrDislike(true);
                 break;
 
         }
+    }
+
+    @Override
+    public void onSwiping() {
+        changeStateViewpager(false);
+    }
+
+    @Override
+    public void onSwipingEnd() {
+        changeStateViewpager(true);
     }
 
     public interface OnFragmentInteractionListener {

@@ -49,10 +49,6 @@ public class MainActivity extends BaseActivity implements SearchFragment.OnFragm
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private static final String TAG = "MainActivity";
-
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
     private SelectiveViewPager mViewPager;
     private SharedPreferences sharedPreferences;
     private String url = "";
@@ -126,30 +122,20 @@ public class MainActivity extends BaseActivity implements SearchFragment.OnFragm
 //        ).executeAsync();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
+
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
-        // Set up the ViewPager with the sections adapter.
         mViewPager = (SelectiveViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
 
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
 
     }
 
     private void checkFcm(SharedPreferences sp) {
 
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-        Log.e(TAG, refreshedToken + "");
+        Log.e(TAG, refreshedToken + "refreshedToken");
         if (!TextUtils.isEmpty(refreshedToken)) {
             Log.e(TAG, "!TextUtils.isEmpty(refreshedToken)");
             sp.edit().putString(Constants.fcm, refreshedToken).commit();
