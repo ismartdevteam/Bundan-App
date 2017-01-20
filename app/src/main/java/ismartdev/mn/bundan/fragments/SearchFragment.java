@@ -2,52 +2,28 @@ package ismartdev.mn.bundan.fragments;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ServerValue;
-import com.google.firebase.database.ValueEventListener;
-import com.lorentzos.flingswipe.SwipeFlingAdapterView;
 import com.mindorks.placeholderview.SwipeDecor;
 import com.mindorks.placeholderview.SwipePlaceHolderView;
 import com.mindorks.placeholderview.listeners.ItemRemovedListener;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import ismartdev.mn.bundan.R;
-import ismartdev.mn.bundan.adapters.UserAdapter;
-import ismartdev.mn.bundan.models.AgeRanges;
-import ismartdev.mn.bundan.models.InteractModel;
-import ismartdev.mn.bundan.models.MatchPost;
 import ismartdev.mn.bundan.models.SearchList;
 import ismartdev.mn.bundan.models.SearchParams;
-import ismartdev.mn.bundan.models.User;
 import ismartdev.mn.bundan.models.UserGender;
-import ismartdev.mn.bundan.models.UserMatched;
 import ismartdev.mn.bundan.util.ApiClient;
 import ismartdev.mn.bundan.util.ApiInterface;
 import ismartdev.mn.bundan.util.Constants;
-import ismartdev.mn.bundan.util.TinderCard;
-import ismartdev.mn.bundan.views.ProductStackView;
-import ismartdev.mn.bundan.views.SingleProductView;
-import ismartdev.mn.bundan.views.UserHolder;
+import ismartdev.mn.bundan.views.TinderCard;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -66,7 +42,6 @@ public class SearchFragment extends Fragment implements View.OnClickListener, Ti
     private static final String URL = "url";
     private static final String TAG = "SearchFragment";
     private static SearchFragment fragment;
-    private DatabaseReference reference;
 
     // TODO: Rename and change types of parameters
     private String uid;
@@ -74,7 +49,6 @@ public class SearchFragment extends Fragment implements View.OnClickListener, Ti
     private OnFragmentInteractionListener mListener;
 
     private SharedPreferences sp;
-    private ProductStackView mProductStackView;
     private String gender;
     private String age_range;
     private ApiInterface apiService;
@@ -118,13 +92,11 @@ public class SearchFragment extends Fragment implements View.OnClickListener, Ti
         dislike.setOnClickListener(this);
         like.setOnClickListener(this);
         mSwipView = (SwipePlaceHolderView) v.findViewById(R.id.swipeView);
-//        mProductStackView = (ProductStackView) v.findViewById(R.id.tinder_mProductStack);
-        reference = FirebaseDatabase.getInstance().getReference();
 
         mSwipView.addItemRemoveListener(new ItemRemovedListener() {
             @Override
             public void onItemRemoved(int count) {
-                Log.e(TAG,count+"--");
+                Log.e(TAG, count + "--");
 
 
             }
@@ -169,11 +141,11 @@ public class SearchFragment extends Fragment implements View.OnClickListener, Ti
 
         return v;
     }
-    private  void makeTinderList(List<UserGender> userGenders){
-        for (UserGender item:userGenders){
-            mSwipView.addView(new TinderCard(uid,getActivity(),item,this,gender,age_range));
-        }
 
+    private void makeTinderList(List<UserGender> userGenders) {
+        for (UserGender item : userGenders) {
+            mSwipView.addView(new TinderCard(uid, getActivity(), item, this, gender, age_range));
+        }
 
 
     }
@@ -193,64 +165,6 @@ public class SearchFragment extends Fragment implements View.OnClickListener, Ti
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
-    }
-
-
-    public void interactUser(final String interUid, boolean choice) {
-        Log.e("interUid-", interUid);
-        InteractModel inter = new InteractModel(interUid, ServerValue.TIMESTAMP);
-        AgeRanges ageRanges = new AgeRanges(interUid);
-
-        Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put(Constants.user + Constants.getInteractName(choice) + uid + "/" + interUid, inter.toMap());
-        childUpdates.put(Constants.user + "/" + uid + Constants.search_ranges + gender + "/" + age_range, ageRanges.toMap());
-
-        reference.updateChildren(childUpdates);
-        Log.e("match picker", Constants.user + Constants.getInteractName(true) + interUid + "/" + uid);
-        if (choice)
-            reference.child(Constants.user + Constants.getInteractName(true) + interUid + "/" + uid).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-
-                    if (dataSnapshot.getValue() != null) {
-                        Toast.makeText(getActivity(), "matched", Toast.LENGTH_LONG).show();
-                        UserMatched userMatched = new UserMatched(uid, ServerValue.TIMESTAMP);
-                        UserMatched interMatched = new UserMatched(interUid, ServerValue.TIMESTAMP);
-                        Map<String, Object> childUpdates = new HashMap<>();
-                        childUpdates.put(Constants.user_matches + uid, interMatched.toMap());
-                        childUpdates.put(Constants.user_matches + interUid, userMatched.toMap());
-                        reference.updateChildren(childUpdates);
-                        sendPushNotificationMatch(uid, interUid);
-                    }
-
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-
-
-    }
-
-    private void sendPushNotificationMatch(String uid, String interUid) {
-
-        Call<MatchPost> call = apiService.matchPush(new MatchPost(uid, interUid));
-        call.enqueue(new Callback<MatchPost>() {
-            @Override
-            public void onResponse(Call<MatchPost> call, Response<MatchPost> response) {
-                if (response.body().getCode() == 200) {
-                    Log.e("retrofit  matchPush ", "yes");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<MatchPost> call, Throwable t) {
-                Log.e("onFailure matchPush ", t.toString());
-            }
-        });
-
     }
 
 
