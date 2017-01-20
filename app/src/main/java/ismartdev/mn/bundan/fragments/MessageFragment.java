@@ -4,24 +4,29 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import ismartdev.mn.bundan.R;
+import ismartdev.mn.bundan.util.Constants;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link MatchesFragment.OnFragmentInteractionListener} interface
+ * {@link MessageFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link MatchesFragment#newInstance} factory method to
+ * Use the {@link MessageFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MatchesFragment extends Fragment {
+public class MessageFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
+    private static final String UID = "uid";
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
@@ -29,8 +34,9 @@ public class MatchesFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+    private DatabaseReference ref;
 
-    public MatchesFragment() {
+    public MessageFragment() {
         // Required empty public constructor
     }
 
@@ -38,15 +44,15 @@ public class MatchesFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
+     * @param uid Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment MatchesFragment.
+     * @return A new instance of fragment MessageFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static MatchesFragment newInstance(String param1, String param2) {
-        MatchesFragment fragment = new MatchesFragment();
+    public static MessageFragment newInstance(String uid, String param2) {
+        MessageFragment fragment = new MessageFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
+        args.putString(UID, uid);
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
@@ -56,7 +62,7 @@ public class MatchesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam1 = getArguments().getString(UID);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
@@ -64,8 +70,19 @@ public class MatchesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        View v=inflater.inflate(R.layout.fragment_matches, container, false);
+        ref= FirebaseDatabase.getInstance().getReference();
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_matches, container, false);
+        createNewMatchView(v);
+        return v;
+    }
+
+    private void createNewMatchView(View v) {
+         ref .child(Constants.user_matches).orderByChild("online").getRef();
+
+        LinearLayoutManager layoutManager= new LinearLayoutManager(getActivity(),LinearLayoutManager.HORIZONTAL, false);
+        RecyclerView  mRecyclerView = (RecyclerView) v.findViewById(R.id.new_match_List);
+        mRecyclerView.setLayoutManager(layoutManager);
     }
 
     // TODO: Rename method, update argument and hook method into UI event

@@ -1,4 +1,4 @@
-package ismartdev.mn.bundan.util;
+package ismartdev.mn.bundan.views;
 
 /**
  * Created by Ulzii on 1/19/2017.
@@ -37,6 +37,9 @@ import ismartdev.mn.bundan.models.InteractModel;
 import ismartdev.mn.bundan.models.MatchPost;
 import ismartdev.mn.bundan.models.UserGender;
 import ismartdev.mn.bundan.models.UserMatched;
+import ismartdev.mn.bundan.util.ApiClient;
+import ismartdev.mn.bundan.util.ApiInterface;
+import ismartdev.mn.bundan.util.Constants;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -130,11 +133,9 @@ public class TinderCard {
                 public void onDataChange(DataSnapshot dataSnapshot) {
 
                     if (dataSnapshot.getValue() != null) {
-                        UserMatched userMatched = new UserMatched(uid, ServerValue.TIMESTAMP);
-                        UserMatched interMatched = new UserMatched(interUid, ServerValue.TIMESTAMP);
+                        UserMatched userMatched = new UserMatched(false, ServerValue.TIMESTAMP);
                         Map<String, Object> childUpdates = new HashMap<>();
-                        childUpdates.put(Constants.user_matches + uid, interMatched.toMap());
-                        childUpdates.put(Constants.user_matches + interUid, userMatched.toMap());
+                        childUpdates.put(Constants.user_matches + uid+'-'+interUid, userMatched.toMap());
                         reference.updateChildren(childUpdates);
                         sendPushNotificationMatch(uid, interUid);
                     }
