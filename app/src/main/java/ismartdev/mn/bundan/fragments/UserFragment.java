@@ -2,10 +2,10 @@ package ismartdev.mn.bundan.fragments;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -124,8 +124,11 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         eduTv.setText(user.education);
         findGenderTv.setText(sp.getString("gender", "female"));
         final String ages = sp.getString("age_range", "18-22");
+
         ageRange.setText(ages);
 
+        agePicker.setDrawTicks(false);
+        agePicker.setRangePinsByValue(Integer.parseInt(ages.split("-")[0]),Integer.parseInt(ages.split("-")[1]));
         agePicker.setOnRangeBarChangeListener(new RangeBar.OnRangeBarChangeListener() {
             @Override
             public void onRangeChangeListener(RangeBar rangeBar, int leftPinIndex,
@@ -133,18 +136,20 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                                               String leftPinValue, String rightPinValue) {
                 String ages=leftPinValue+"-"+rightPinValue;
                 ageRange.setText(ages);
+                Log.e("ages-",ages);
                 sp.edit().putString("age_range",ages).commit();
-
+                onChangeAge(true);
             }
         });
+
 
     }
 
 
     // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
+    public void onChangeAge(boolean changed) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+            mListener.onChangeUserFind(changed);
         }
     }
 
@@ -186,6 +191,6 @@ public class UserFragment extends Fragment implements View.OnClickListener {
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        void onChangeUserFind(boolean changed);
     }
 }

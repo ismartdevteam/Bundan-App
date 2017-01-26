@@ -29,19 +29,19 @@ public class UserDeteailActivity extends AppCompatActivity {
                             JSONObject object,
                             GraphResponse response) {
                         Log.e("data", response.getRawResponse() + "");
-                        try {
-                            addToFirebase(object, getUid());
-
-                        } catch (JSONException e) {
-                            Toast.makeText(FullscreenActivity.this, e.getMessage() + "", Toast.LENGTH_LONG).show();
-                            e.printStackTrace();
-                        }
+//                        try {
+////                            addToFirebase(object, getUid());getUid
+//
+//                        } catch (JSONException e) {
+////                            Toast.makeText(FullscreenActivity.this, e.getMessage() + "", Toast.LENGTH_LONG).show();
+//                            e.printStackTrace();
+//                        }
 
 
                     }
                 });
         Bundle parameters = new Bundle();
-        parameters.putString("fields", "id,name,gender,education,birthday,picture.type(large),email,friends,work,likes");
+        parameters.putString("fields", "work");
         request.setParameters(parameters);
         request.executeAsync();
     }

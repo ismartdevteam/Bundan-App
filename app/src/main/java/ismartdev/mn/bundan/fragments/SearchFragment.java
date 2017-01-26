@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import com.mindorks.placeholderview.listeners.ItemRemovedListener;
 
 import java.util.List;
 
+import ismartdev.mn.bundan.MainActivity;
 import ismartdev.mn.bundan.R;
 import ismartdev.mn.bundan.models.SearchList;
 import ismartdev.mn.bundan.models.SearchParams;
@@ -111,6 +113,19 @@ public class SearchFragment extends Fragment implements View.OnClickListener, Ti
 
                         .setSwipeInMsgLayoutId(R.layout.tinder_swipe_in_msg_view)
                         .setSwipeOutMsgLayoutId(R.layout.tinder_swipe_out_msg_view));
+        getListService();
+        return v;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+    }
+    private void addSearchView(){
+
+    }
+    public void getListService() {
         sp = getActivity().getSharedPreferences(Constants.sp_search, Context.MODE_PRIVATE);
         gender = sp.getString("gender", "female");
         age_range = sp.getString("age_range", "18-22");
@@ -119,6 +134,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener, Ti
         apiService =
                 ApiClient.getClient(Constants.url).create(ApiInterface.class);
         SearchParams searchParams = new SearchParams(age_range, gender, limit, uid);
+        Log.e("SearchParams",searchParams.getUid()+"-"+searchParams.getAge_range()+"-"+searchParams.getGender());
 
         Call<SearchList> call = apiService.searchPeople(searchParams);
         call.enqueue(new Callback<SearchList>() {
@@ -126,6 +142,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener, Ti
             public void onResponse(Call<SearchList> call, Response<SearchList> response) {
                 if (response.body().getCode() == 200) {
                     List<UserGender> searchList = response.body().getData();
+                    mSwipView.removeAllViews();
                     makeTinderList(searchList);
                 }
             }
@@ -137,7 +154,6 @@ public class SearchFragment extends Fragment implements View.OnClickListener, Ti
         });
 
 
-        return v;
     }
 
     private void makeTinderList(List<UserGender> userGenders) {
@@ -181,7 +197,6 @@ public class SearchFragment extends Fragment implements View.OnClickListener, Ti
 
             case R.id.search_like:
                 mSwipView.doSwipe(true);
-//                mProductStackView.likeOrDislike(true);
                 break;
 
         }

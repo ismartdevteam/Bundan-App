@@ -1,177 +1,182 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
-    android:orientation="vertical"
 
     tools:context="ismartdev.mn.bundan.fragments.UserFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/white"
-        android:orientation="vertical"
-        android:padding="18dp">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="150dp">
-
-            <ismartdev.mn.bundan.util.CircleImageView
-                android:id="@+id/user_image"
-                android:layout_width="150dp"
-                android:layout_height="150dp"
-                android:layout_centerInParent="true"
-                android:scaleType="centerCrop" />
-
-            <Button
-                android:id="@+id/user_edit_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignEnd="@+id/user_image"
-                android:layout_alignParentBottom="true"
-                android:layout_alignRight="@+id/user_image"
-                android:text="x" />
-
-        </RelativeLayout>
-
-        <TextView
-            android:id="@+id/user_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:gravity="center_horizontal"
-
-            android:textAppearance="?android:textAppearanceLarge"
-            android:textColor="@android:color/black"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/user_work"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:gravity="center_horizontal"
-
-            android:textColor="@android:color/black" />
-
-        <TextView
-            android:id="@+id/user_edu"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:gravity="center_horizontal"
-
-            android:textColor="@android:color/black" />
-    </LinearLayout>
-
-    <android.support.v7.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-
-        android:layout_margin="18dp">
+        android:layout_height="match_parent"
+        android:paddingBottom="18dp"
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@android:color/white"
             android:orientation="vertical"
-            android:padding="10dp">
+            android:padding="18dp">
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
+                android:layout_height="150dp">
 
-                android:orientation="horizontal">
+                <ismartdev.mn.bundan.util.CircleImageView
+                    android:id="@+id/user_image"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:layout_centerInParent="true"
+                    android:scaleType="centerCrop" />
 
-                <TextView
+                <Button
+                    android:id="@+id/user_edit_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/find_gender" />
+                    android:layout_alignEnd="@+id/user_image"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignRight="@+id/user_image"
+                    android:text="x" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center|right"
+            </RelativeLayout>
 
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/user_find_gender"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/ic_right_arrow" />
-                </LinearLayout>
-            </LinearLayout>
-
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:background="@color/black_overlay" />
-
-            <LinearLayout
+            <TextView
+                android:id="@+id/user_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingTop="10dp">
+                android:layout_marginTop="10dp"
+                android:gravity="center_horizontal"
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/age_range" />
+                android:textAppearance="?android:textAppearanceLarge"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center|right"
-
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/user_age_range_text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="right" />
-                </LinearLayout>
-
-
-            </LinearLayout>
-
-            <com.appyvet.rangebar.RangeBar
-                android:id="@+id/age_range_bar"
+            <TextView
+                android:id="@+id/user_work"
                 android:layout_width="match_parent"
-                android:layout_height="72dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                app:tickEnd="50"
-                app:tickInterval="1"
-                app:tickStart="18" />
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center_horizontal"
+
+                android:textColor="@android:color/black" />
+
+            <TextView
+                android:id="@+id/user_edu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:gravity="center_horizontal"
+
+                android:textColor="@android:color/black" />
         </LinearLayout>
-    </android.support.v7.widget.CardView>
 
-    <android.support.v7.widget.CardView
-        android:id="@+id/logout_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="18dp"
-        android:layout_marginRight="18dp">
-
-        <TextView
+        <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="10dp"
-            android:text="@string/logout"
-            android:textColor="@color/colorPrimary" />
-    </android.support.v7.widget.CardView>
 
-</LinearLayout>
+            android:layout_margin="18dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="10dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/find_gender" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center|right"
+
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/user_find_gender"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_right_arrow" />
+                    </LinearLayout>
+                </LinearLayout>
+
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="@color/black_overlay" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingTop="10dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/age_range" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center|right"
+
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/user_age_range_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="right" />
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+                <com.appyvet.rangebar.RangeBar
+                    android:id="@+id/age_range_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="72dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    app:tickEnd="50"
+                    app:tickInterval="1"
+                    app:tickStart="18" />
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/logout_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="18dp"
+            android:layout_marginRight="18dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="@string/logout"
+                android:textColor="@color/colorPrimary" />
+        </android.support.v7.widget.CardView>
+    </LinearLayout>
+</ScrollView>

@@ -96,10 +96,10 @@ public class MessageFragment extends Fragment {
         mRecyclerView.setLayoutManager(layoutManager);
 
         matchAdapter = new FirebaseRecyclerAdapter<UserMatched, MatchViewHolder>(UserMatched.class, R.layout.match_item, MatchViewHolder.class,
-                ref.child(Constants.user_matches +uid).orderByChild("isChat").equalTo(false).getRef()) {
+                ref.child(Constants.user_matches +uid).orderByChild("ischat").startAt("no").getRef()) {
             @Override
             protected void populateViewHolder(final MatchViewHolder viewHolder, final UserMatched userMatched, int position, String key) {
-                Log.e("usermatche","yes");
+                Log.e("usermatche",userMatched.getDate()+"--");
                 makeMatchItem(viewHolder.userImage, key);
 
             }
@@ -165,5 +165,10 @@ public class MessageFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        matchAdapter.cleanup();
     }
 }

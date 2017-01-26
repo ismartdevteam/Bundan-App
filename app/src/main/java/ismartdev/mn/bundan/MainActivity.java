@@ -2,49 +2,25 @@ package ismartdev.mn.bundan;
 
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
 import android.view.ViewGroup;
 
-import android.widget.TextView;
-
-import com.facebook.AccessToken;
-import com.facebook.FacebookSdk;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
-import com.facebook.HttpMethod;
-import com.google.firebase.auth.FacebookAuthProvider;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import ismartdev.mn.bundan.fragments.MessageFragment;
 import ismartdev.mn.bundan.fragments.SearchFragment;
 import ismartdev.mn.bundan.fragments.UserFragment;
 import ismartdev.mn.bundan.util.Constants;
-import ismartdev.mn.bundan.util.HMAC;
 import ismartdev.mn.bundan.util.SelectiveViewPager;
 
 
@@ -55,6 +31,7 @@ public class MainActivity extends BaseActivity implements SearchFragment.OnFragm
     private SelectiveViewPager mViewPager;
     private SharedPreferences sharedPreferences;
     private String url = "";
+    public static boolean isSearchAgain = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +52,31 @@ public class MainActivity extends BaseActivity implements SearchFragment.OnFragm
         mViewPager.setOffscreenPageLimit(3);
 
 
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if (position == 1) {
+                    if (isSearchAgain) {
+
+                        Log.e("isSearchAgain", isSearchAgain + "");
+                        isSearchAgain=false;
+                       SearchFragment fragment= SearchFragment.getInstance();
+                        fragment.getListService();
+
+                    }
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 
     private void checkFcm(SharedPreferences sp) {
@@ -90,28 +92,6 @@ public class MainActivity extends BaseActivity implements SearchFragment.OnFragm
     }
 
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.menu_main, menu);
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the SearchFragment/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
-
     @Override
     public void onFragmentInteraction(boolean isPager) {
         mViewPager.setPaging(isPager);
@@ -122,47 +102,43 @@ public class MainActivity extends BaseActivity implements SearchFragment.OnFragm
 
     }
 
+    @Override
+    public void onChangeUserFind(boolean changed) {
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
+        isSearchAgain = changed;
 
-        public PlaceholderFragment() {
+    }
+
+    public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
+        private final FragmentManager mFragmentManager;
+        private Map<Integer, String> mFragmentTags;
+
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            Object object = super.instantiateItem(container, position);
+            if (object instanceof Fragment) {
+                Fragment fragment = (Fragment) object;
+                String tag = fragment.getTag();
+                mFragmentTags.put(position, tag);
+            }
+            return object;
         }
 
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
+        public Fragment getFragment(int position) {
+            Fragment fragment = null;
+            String tag = mFragmentTags.get(position);
+            if (tag != null) {
+                fragment = mFragmentManager.findFragmentByTag(tag);
+            }
             return fragment;
         }
 
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-            return rootView;
-        }
-    }
-
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
-
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
+            mFragmentManager = fm;
+            mFragmentTags = new HashMap<Integer, String>();
         }
+
 
         @Override
         public Fragment getItem(int position) {
@@ -172,11 +148,12 @@ public class MainActivity extends BaseActivity implements SearchFragment.OnFragm
                 case 0:
                     return UserFragment.newInstance(getUid(), url);
                 case 1:
+
                     return SearchFragment.newInstance(getUid(), url);
                 case 2:
                     return MessageFragment.newInstance(getUid(), url);
                 default:
-                    return PlaceholderFragment.newInstance(position + 1);
+                    return MessageFragment.newInstance(getUid(), url);
 
             }
 
