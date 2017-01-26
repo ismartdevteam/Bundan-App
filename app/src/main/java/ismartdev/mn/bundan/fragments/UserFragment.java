@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.appyvet.rangebar.RangeBar;
@@ -44,6 +45,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     private OnFragmentInteractionListener mListener;
     private DatabaseReference ref;
     private CircleImageView image;
+    private Button editProfile;
     private TextView nameTv;
     private TextView workTv;
     private TextView eduTv;
@@ -89,6 +91,8 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_user, container, false);
         image = (CircleImageView) v.findViewById(R.id.user_image);
+        editProfile = (Button) v.findViewById(R.id.user_edit_btn);
+        editProfile.setOnClickListener(this);
         nameTv = (TextView) v.findViewById(R.id.user_name);
         workTv = (TextView) v.findViewById(R.id.user_work);
         eduTv = (TextView) v.findViewById(R.id.user_edu);

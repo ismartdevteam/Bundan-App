@@ -1,13 +1,190 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_user_deteail"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+
     tools:context="ismartdev.mn.bundan.UserDeteailActivity">
 
-</RelativeLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:orientation="horizontal">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:layout_weight="2">
+
+                <ImageView
+                    android:id="@+id/user_imagef"
+                    android:layout_width="match_parent"
+                    android:background="@drawable/image_border"
+                    android:layout_height="match_parent" />
+
+                <ImageView
+                    android:id="@+id/user_imagef_Btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignEnd="@+id/user_imagef"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignRight="@+id/user_imagef"
+                    android:src="@drawable/delete" />
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="10dp"
+                    android:layout_weight="2">
+
+                    <ImageView
+                        android:id="@+id/user_imagetwo"
+                        android:layout_width="match_parent"
+                        android:background="@drawable/image_border"
+                        android:layout_height="match_parent" />
+
+                    <ImageView
+                        android:id="@+id/user_imagetwo_Btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignEnd="@+id/user_imagetwo"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignRight="@+id/user_imagetwo"
+                        android:src="@drawable/plus" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="10dp"
+                    android:layout_weight="2">
+
+                    <ImageView
+                        android:id="@+id/user_imagethree"
+                        android:layout_width="match_parent"
+                        android:background="@drawable/image_border"
+                        android:layout_height="match_parent" />
+
+                    <ImageView
+                        android:id="@+id/user_imagethree_Btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignEnd="@+id/user_imagethree"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignRight="@+id/user_imagethree"
+                        android:src="@drawable/plus" />
+                </RelativeLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:orientation="horizontal">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:id="@+id/user_imagesix"
+                    android:layout_width="match_parent"
+                    android:background="@drawable/image_border"
+                    android:layout_height="match_parent" />
+
+                <ImageView
+                    android:id="@+id/user_imagesix_Btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignEnd="@+id/user_imagesix"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignRight="@+id/user_imagesix"
+                    android:src="@drawable/plus" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:id="@+id/user_imagefive"
+                    android:layout_width="match_parent"
+                    android:background="@drawable/image_border"
+                    android:layout_height="match_parent" />
+
+                <ImageView
+                    android:id="@+id/user_imagefive_Btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignEnd="@+id/user_imagefive"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignRight="@+id/user_imagefive"
+                    android:src="@drawable/plus" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+
+                android:layout_weight="1">
+
+                <ImageView
+                    android:id="@+id/user_imagefour"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/image_border" />
+
+                <ImageView
+                    android:id="@+id/user_imagefour_Btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignEnd="@+id/user_imagefour"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignRight="@+id/user_imagefour"
+                    android:src="@drawable/plus" />
+            </RelativeLayout>
+        </LinearLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:padding="18dp"
+            android:layout_height="wrap_content"
+            android:text="Current work"/>
+        <TextView
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/user_work"
+            android:background="@android:color/white"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:padding="18dp"
+            android:layout_height="wrap_content"
+            android:text="School"/>
+        <TextView
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/user_school"
+            android:background="@android:color/white"/>
+    </LinearLayout>
+</ScrollView>
