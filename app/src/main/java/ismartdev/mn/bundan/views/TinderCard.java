@@ -8,7 +8,6 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -95,7 +94,7 @@ public class TinderCard {
     @SwipeOut
     private void onSwipedOut() {
 
-        interactUser(userGender.getUid(),false);
+        interactUser(userGender.getUid(), false);
         callback.onSwipingEnd();
     }
 
@@ -107,7 +106,7 @@ public class TinderCard {
     @SwipeIn
     private void onSwipeIn() {
 
-        interactUser(userGender.getUid(),true);
+        interactUser(userGender.getUid(), true);
         callback.onSwipingEnd();
     }
 
@@ -135,7 +134,8 @@ public class TinderCard {
                     if (dataSnapshot.getValue() != null) {
                         UserMatched userMatched = new UserMatched(false, ServerValue.TIMESTAMP);
                         Map<String, Object> childUpdates = new HashMap<>();
-                        childUpdates.put(Constants.user_matches + uid+'-'+interUid, userMatched.toMap());
+                        childUpdates.put(Constants.user_matches + uid + '/' + interUid, userMatched.toMap());
+                        childUpdates.put(Constants.user_matches + interUid + '/' + uid, userMatched.toMap());
                         reference.updateChildren(childUpdates);
                         sendPushNotificationMatch(uid, interUid);
                     }

@@ -6,15 +6,24 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import ismartdev.mn.bundan.R;
+import ismartdev.mn.bundan.models.UserMatched;
+import ismartdev.mn.bundan.util.CircleImageView;
 import ismartdev.mn.bundan.util.Constants;
+import ismartdev.mn.bundan.util.FirebaseRecyclerAdapter;
+import ismartdev.mn.bundan.views.MatchViewHolder;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -30,11 +39,12 @@ public class MessageFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
+    private String uid;
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
     private DatabaseReference ref;
+    private FirebaseRecyclerAdapter<UserMatched, MatchViewHolder> matchAdapter;
 
     public MessageFragment() {
         // Required empty public constructor
@@ -44,7 +54,7 @@ public class MessageFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param uid Parameter 1.
+     * @param uid    Parameter 1.
      * @param param2 Parameter 2.
      * @return A new instance of fragment MessageFragment.
      */
@@ -62,7 +72,7 @@ public class MessageFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(UID);
+            uid = getArguments().getString(UID);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
@@ -70,19 +80,52 @@ public class MessageFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v=inflater.inflate(R.layout.fragment_matches, container, false);
-        ref= FirebaseDatabase.getInstance().getReference();
+        View v = inflater.inflate(R.layout.fragment_matches, container, false);
+        ref = FirebaseDatabase.getInstance().getReference();
         // Inflate the layout for this fragment
         createNewMatchView(v);
         return v;
     }
 
     private void createNewMatchView(View v) {
-         ref .child(Constants.user_matches).orderByChild("online").getRef();
 
-        LinearLayoutManager layoutManager= new LinearLayoutManager(getActivity(),LinearLayoutManager.HORIZONTAL, false);
-        RecyclerView  mRecyclerView = (RecyclerView) v.findViewById(R.id.new_match_List);
+
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
+        RecyclerView mRecyclerView = (RecyclerView) v.findViewById(R.id.new_match_List);
         mRecyclerView.setLayoutManager(layoutManager);
+
+        matchAdapter = new FirebaseRecyclerAdapter<UserMatched, MatchViewHolder>(UserMatched.class, R.layout.match_item, MatchViewHolder.class,
+                ref.child(Constants.user_matches +uid).orderByChild("isChat").equalTo(false).getRef()) {
+            @Override
+            protected void populateViewHolder(final MatchViewHolder viewHolder, final UserMatched userMatched, int position, String key) {
+                Log.e("usermatche","yes");
+                makeMatchItem(viewHolder.userImage, key);
+
+            }
+        };
+        mRecyclerView.setAdapter(matchAdapter);
+
+
+    }
+
+    private void makeMatchItem(final CircleImageView circleImageView, String key) {
+
+        ref.child(Constants.user + "/" + key + "/picture").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() != null) {
+
+                    Picasso.with(getActivity()).load(dataSnapshot.getValue().toString()).into(circleImageView);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event
