@@ -7,10 +7,8 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.util.Base64;
@@ -32,7 +30,6 @@ import com.facebook.internal.ImageRequest;
 import com.facebook.internal.ImageResponse;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
-import com.facebook.login.widget.ProfilePictureView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -45,27 +42,24 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ismartdev.mn.bundan.models.Image;
 import ismartdev.mn.bundan.models.User;
 import ismartdev.mn.bundan.models.UserGender;
 import ismartdev.mn.bundan.util.Constants;
@@ -97,6 +91,7 @@ public class FullscreenActivity extends BaseActivity {
         showProgressDialog();
         mAuth = FirebaseAuth.getInstance();
         if (mAuth.getCurrentUser() != null) {
+            Log.d(TAG,"is logged");
             finish();
             startMainAc();
 
@@ -188,7 +183,7 @@ public class FullscreenActivity extends BaseActivity {
 
                         }
 
-                        hideProgressDialog();
+
                     }
                 });
     }
@@ -236,12 +231,13 @@ public class FullscreenActivity extends BaseActivity {
                                 StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(getString(R.string.storage_path));
 
 
-                                StorageReference userImageRef = storageRef.child("user-photos/" + uid + "/main.jpg");
+                                StorageReference userImageRef = storageRef.child("user-photos/" + uid + "/fb_image1.jpg");
 
                                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
                                 if (responseImage == null) {
-                                    Log.e(TAG,"fuck");
+
+                                    hideProgressDialog();
                                     startMainAc();
                                 } else {
                                     responseImage.compress(Bitmap.CompressFormat.JPEG, 100, baos);
@@ -257,13 +253,14 @@ public class FullscreenActivity extends BaseActivity {
                                     }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                                         @Override
                                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                            // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+
                                             Uri downloadUrl = taskSnapshot.getDownloadUrl();
                                             SharedPreferences.Editor editor = sharedPreferences.edit();
 
                                             User user = new User();
-                                            user.picture = downloadUrl.toString();
-                                            editor.putString("picture", user.picture);
+                                            user.picture = new ArrayList<Image>();
+                                            user.picture.add(new Image(downloadUrl.toString()));
+                                            editor.putString("picture", user.picture.get(0).url);
                                             editor.commit();
 
                                             Map<String, Object> childUpdates = new HashMap<>();
@@ -285,17 +282,17 @@ public class FullscreenActivity extends BaseActivity {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         User user = new User();
         user.birthday = df.format(new Date(obj.getString("birthday")));
-        user.education = obj.getJSONArray("education").toString();
+        user.education = getSchool(obj.getJSONArray("education"));
         user.email = obj.getString("email");
         user.gender = obj.getString("gender");
         user.fb_id = obj.getString("id");
-          user.picture=obj.getJSONObject("picture").getJSONObject("data").getString("url");
+//          user.picture=obj.getJSONObject("picture").getJSONObject("data").getString("url");
 
         user.name = obj.getString("name");
-        user.work = obj.getJSONArray("work").toString();
+        user.work = getWork(obj.getJSONArray("work"));
         user.user_friends = obj.getJSONObject("friends") + "";
         user.user_likes = obj.getJSONObject("likes") + "";
-        UserGender userGender = new UserGender(uid, user.birthday, user.fb_id, user.name,user.picture);
+        UserGender userGender = new UserGender(uid, user.birthday, user.fb_id, user.name,user.work);
         Map<String, Object> childUpdates = new HashMap<>();
         childUpdates.put(Constants.user + "/" + uid, user.toMap());
         childUpdates.put(Constants.user + "-" + user.gender + "/" + uid, userGender.toMap());
@@ -308,13 +305,48 @@ public class FullscreenActivity extends BaseActivity {
         } else {
             editor.putString("gender", Constants.male);
         }
+          editor.putString("birthday",user.birthday);
         editor.commit();
 
         try {
             uploadImage(uid, user.fb_id, user.gender);
         } catch (IOException e) {
+            Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_LONG).show();
             e.printStackTrace();
+            hideProgressDialog();
         }
+    }
+    private String getSchool(JSONArray school) {
+        String schoolStr="";
+        if(school.length()>0){
+            try {
+                JSONObject item=school.getJSONObject(0);
+
+                    schoolStr=item.getJSONObject("school").getString("name");
+                return schoolStr;
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return "";
+    }
+    private String getWork(JSONArray work) {
+        String workStr="";
+       if(work.length()>0){
+           try {
+               JSONObject item=work.getJSONObject(0);
+               if(!item.isNull("position"))
+               workStr=item.getJSONObject("position").getString("name")+" at";
+               if(!item.isNull("employer"))
+                   workStr=workStr+" "+item.getJSONObject("employer").getString("name");
+               if(!item.isNull("location"))
+                   workStr=workStr+" "+item.getJSONObject("location").getString("name");
+               return workStr;
+           } catch (JSONException e) {
+               e.printStackTrace();
+           }
+       }
+        return "";
     }
 
 }

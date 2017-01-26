@@ -4,9 +4,8 @@ package ismartdev.mn.bundan.models;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
 
-import org.json.JSONObject;
-
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,7 +21,7 @@ public class User {
     public String education;
 
     public String email;
-    public String picture;
+    public List<Image> picture;
     public String user_friends;
     public String user_likes;
 
@@ -30,7 +29,7 @@ public class User {
 
     }
     public User(String birthday, String education, String email, String gender, String fb_id,
-                String name, String picture,String work,String user_friends,String user_likes) {
+                String name, List<Image> picture, String work, String user_friends, String user_likes) {
 
         this.birthday = birthday;
         this.education = education;
@@ -51,7 +50,7 @@ public class User {
         result.put("birthday", birthday);
         result.put("email", email);
         result.put("gender", gender);
-        result.put("picture", picture);
+//        result.put("picture", picture);
         result.put("education", education);
         result.put("work", work);
         result.put("user_friends", user_friends);

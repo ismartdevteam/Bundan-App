@@ -58,6 +58,7 @@ dependencies {
     compile 'commons-codec:commons-codec:1.10'
     compile 'com.mindorks:placeholderview:0.6.1'
     compile 'com.mindorks:butterknifelite:0.0.3'
+    compile 'com.appyvet:materialrangebar:1.3'
 
 
 }

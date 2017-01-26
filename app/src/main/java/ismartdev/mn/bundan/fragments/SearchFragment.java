@@ -113,8 +113,6 @@ public class SearchFragment extends Fragment implements View.OnClickListener, Ti
                         .setSwipeOutMsgLayoutId(R.layout.tinder_swipe_out_msg_view));
         sp = getActivity().getSharedPreferences(Constants.sp_search, Context.MODE_PRIVATE);
         gender = sp.getString("gender", "female");
-        // TODO: 1/14/2017 delete whe production
-        gender = "female";
         age_range = sp.getString("age_range", "18-22");
         String limit = sp.getString("limit", "20");
 

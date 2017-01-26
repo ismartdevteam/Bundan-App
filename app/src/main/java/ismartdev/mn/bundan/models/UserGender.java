@@ -25,8 +25,19 @@ public class UserGender {
     private String age;
     private String picture;
 
+
+
+    private String work;
+
     public UserGender() {
 
+    }
+    public UserGender(String uid, String birthday, String fb_id, String name,String work) {
+        this.uid = uid;
+        this.birthday = birthday;
+        this.work = work;
+        this.fb_id = fb_id;
+        this.name = name;
     }
     public UserGender(String uid, String birthday, String fb_id, String name) {
         this.uid = uid;
@@ -34,19 +45,13 @@ public class UserGender {
         this.fb_id = fb_id;
         this.name = name;
     }
-    public UserGender(String uid, String birthday, String fb_id, String name, String picture) {
-        this.uid = uid;
-        this.birthday = birthday;
-        this.fb_id = fb_id;
-        this.name = name;
-        this.picture = picture;
-    }
 
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
         result.put("fb_id", fb_id);
         result.put("name", name);
+        result.put("work", work);
         result.put("birthday", birthday);
         result.put("picture", picture);
 
@@ -63,9 +68,6 @@ public class UserGender {
         return picture;
     }
 
-    public void setPicture(String picture) {
-        this.picture = picture;
-    }
 
     public String getBirthday() {
         return birthday;
@@ -97,5 +99,16 @@ public class UserGender {
 
     public void setName(String name) {
         this.name = name;
+    }
+    public String getWork() {
+        return work;
+    }
+
+    public void setWork(String work) {
+        this.work = work;
+    }
+
+    public void setPicture(String picture) {
+        this.picture = picture;
     }
 }

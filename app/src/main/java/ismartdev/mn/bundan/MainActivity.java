@@ -41,11 +41,12 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import ismartdev.mn.bundan.fragments.SearchFragment;
+import ismartdev.mn.bundan.fragments.UserFragment;
 import ismartdev.mn.bundan.util.Constants;
 import ismartdev.mn.bundan.util.HMAC;
 import ismartdev.mn.bundan.util.SelectiveViewPager;
 
-public class MainActivity extends BaseActivity implements SearchFragment.OnFragmentInteractionListener {
+public class MainActivity extends BaseActivity implements SearchFragment.OnFragmentInteractionListener,UserFragment.OnFragmentInteractionListener {
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private static final String TAG = "MainActivity";
@@ -61,73 +62,15 @@ public class MainActivity extends BaseActivity implements SearchFragment.OnFragm
         if (sharedPreferences.getString(Constants.fcm, "").equals(""))
             checkFcm(sharedPreferences);
 
-//        Bundle params = new Bundle();
-//        Log.e("appsecret_proof",HMAC.hmacDigestSha256());
-//        params.putString("appsecret_proof", HMAC.hmacDigestSha256());
-//        params.putString("fields", "context.fields(mutual_friends)");
-///* make the API call */
-//        new GraphRequest(
-//                AccessToken.getCurrentAccessToken(),
-//                "/246518952451357",
-//                params,
-//                HttpMethod.GET,
-//
-//                new GraphRequest.Callback() {
-//                    public void onCompleted(GraphResponse response) {
-//
-//                        Log.e("facebook", "onCompleted: " +response.getRawResponse()+" ");
-//                        Log.e("facebook", "onCompleted: " +response.getError().getErrorMessage()+" ");
-//
-//
-//                        try {
-//                            ArrayList<String> names = new ArrayList<String>();
-//                            ArrayList<String> ids = new ArrayList<String>();
-//
-//                            JSONObject contextObj = response.getJSONObject().getJSONObject("context");
-//                            JSONObject mutualFriendsObj = contextObj.getJSONObject("mutual_friends");
-//                            JSONArray friendData = mutualFriendsObj.getJSONArray("data");
-//
-//                            for(int i = 0; i < friendData.length(); i++){
-//                                JSONObject obj = friendData.getJSONObject(i);
-//                                names.add(obj.getString("name"));
-//                                ids.add(obj.getString("id"));
-//                            }
-//                                Log.e("hha",names.size()+"");
-//                        }
-//                        catch(JSONException e){
-//                            e.printStackTrace();
-//                        } catch (NullPointerException n) {
-//                            n.printStackTrace();
-//                        }
-//
-//
-//            /* handle the result */
-////                        try {
-////                            new GraphRequest(
-////                                    AccessToken.getCurrentAccessToken(),
-////                                    "/"+response.getJSONObject().getJSONObject("context").getString("id"),
-////                                    null,
-////                                    HttpMethod.GET,
-////                                    new GraphRequest.Callback() {
-////                                        public void onCompleted(GraphResponse ds) {
-////                /* handle the result */   Log.e("facebook", "onCompleted: " +ds.getRawResponse());
-////                                        }
-////                                    }
-////                            ).executeAsync();
-////                        } catch (JSONException e) {
-////                            e.printStackTrace();
-////                        }
-//                    }
-//                }
-//        ).executeAsync();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         mViewPager = (SelectiveViewPager) findViewById(R.id.container);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
 
+        mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.setOffscreenPageLimit(3);
 
 
     }
@@ -145,31 +88,36 @@ public class MainActivity extends BaseActivity implements SearchFragment.OnFragm
     }
 
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the SearchFragment/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.menu_main, menu);
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        // Handle action bar item clicks here. The action bar will
+//        // automatically handle clicks on the SearchFragment/Up button, so long
+//        // as you specify a parent activity in AndroidManifest.xml.
+//        int id = item.getItemId();
+//
+//        //noinspection SimplifiableIfStatement
+//        if (id == R.id.action_settings) {
+//            return true;
+//        }
+//
+//        return super.onOptionsItemSelected(item);
+//    }
 
     @Override
     public void onFragmentInteraction(boolean isPager) {
         mViewPager.setPaging(isPager);
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 
     /**
@@ -218,6 +166,8 @@ public class MainActivity extends BaseActivity implements SearchFragment.OnFragm
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
             switch (position) {
+                case 0:
+                    return UserFragment.newInstance(getUid(), url);
                 case 1:
                     return SearchFragment.newInstance(getUid(), url);
 

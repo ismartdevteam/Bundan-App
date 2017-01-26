@@ -17,11 +17,10 @@ public class ApiClient {
     public static Retrofit getClient( String url) {
         if (retrofit==null) {
             HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-// set your desired log level
+
             logging.setLevel(HttpLoggingInterceptor.Level.BODY);
             OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
-// add your other interceptors …
-// add logging as last interceptor
+
             httpClient.addInterceptor(logging);
             retrofit = new Retrofit.Builder()
                     .baseUrl(url)
