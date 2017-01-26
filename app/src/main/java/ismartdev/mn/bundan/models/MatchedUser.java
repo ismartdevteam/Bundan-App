@@ -17,7 +17,6 @@ public class MatchedUser {
 
 
     public MatchedUser() {
-
     }
 
     public MatchedUser(String name, String picture) {

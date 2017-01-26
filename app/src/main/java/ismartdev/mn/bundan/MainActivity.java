@@ -40,13 +40,15 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import ismartdev.mn.bundan.fragments.MessageFragment;
 import ismartdev.mn.bundan.fragments.SearchFragment;
 import ismartdev.mn.bundan.fragments.UserFragment;
 import ismartdev.mn.bundan.util.Constants;
 import ismartdev.mn.bundan.util.HMAC;
 import ismartdev.mn.bundan.util.SelectiveViewPager;
 
-public class MainActivity extends BaseActivity implements SearchFragment.OnFragmentInteractionListener,UserFragment.OnFragmentInteractionListener {
+
+public class MainActivity extends BaseActivity implements SearchFragment.OnFragmentInteractionListener, MessageFragment.OnFragmentInteractionListener, UserFragment.OnFragmentInteractionListener {
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private static final String TAG = "MainActivity";
@@ -120,6 +122,7 @@ public class MainActivity extends BaseActivity implements SearchFragment.OnFragm
 
     }
 
+
     /**
      * A placeholder fragment containing a simple view.
      */
@@ -170,7 +173,8 @@ public class MainActivity extends BaseActivity implements SearchFragment.OnFragm
                     return UserFragment.newInstance(getUid(), url);
                 case 1:
                     return SearchFragment.newInstance(getUid(), url);
-
+                case 2:
+                    return MessageFragment.newInstance(getUid(), url);
                 default:
                     return PlaceholderFragment.newInstance(position + 1);
 

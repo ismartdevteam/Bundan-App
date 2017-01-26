@@ -14,25 +14,43 @@ import java.util.Map;
 public class UserMatched {
 
     private boolean isChat=false;
-    private Map<String, String> date;
+
+    private Map<String, String> createDate;
+
+    private long date;
 
 
     public UserMatched() {
 
     }
 
-    public UserMatched(boolean isChat, Map<String, String> date) {
+    public UserMatched(boolean isChat, Map<String, String> createDate) {
         this.isChat = isChat;
-        this.date = date;
+        this.createDate = createDate;
     }
 
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
-        result.put("date", date);
+        result.put("date", createDate);
         result.put("isChat", isChat);
 
 
         return result;
+    }
+    public boolean isChat() {
+        return isChat;
+    }
+
+    public void setChat(boolean chat) {
+        isChat = chat;
+    }
+
+    public long getDate() {
+        return date;
+    }
+
+    public void setDate(long date) {
+        this.date = date;
     }
 }
