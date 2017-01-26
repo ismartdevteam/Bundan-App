@@ -140,6 +140,7 @@ public abstract class FirebaseRecyclerAdapter<T, VH extends RecyclerView.ViewHol
      * @return the model extracted from the DataSnapshot
      */
     protected T parseSnapshot(DataSnapshot snapshot) {
+        Log.e(TAG,snapshot.getValue().toString());
         return snapshot.getValue(mModelClass);
     }
 
