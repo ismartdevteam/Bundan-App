@@ -1,6 +1,7 @@
 package ismartdev.mn.bundan.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -21,6 +22,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import ismartdev.mn.bundan.R;
+import ismartdev.mn.bundan.UserDeteailActivity;
 import ismartdev.mn.bundan.models.User;
 import ismartdev.mn.bundan.util.CircleImageView;
 import ismartdev.mn.bundan.util.Constants;
@@ -54,6 +56,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     private RangeBar agePicker;
     private SharedPreferences sp;
     private CardView logout;
+    private User user;
 
     public UserFragment() {
         // Required empty public constructor
@@ -92,7 +95,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         View v = inflater.inflate(R.layout.fragment_user, container, false);
         image = (CircleImageView) v.findViewById(R.id.user_image);
         editProfile = (Button) v.findViewById(R.id.user_edit_btn);
-        editProfile.setOnClickListener(this);
+
         nameTv = (TextView) v.findViewById(R.id.user_name);
         workTv = (TextView) v.findViewById(R.id.user_work);
         eduTv = (TextView) v.findViewById(R.id.user_edu);
@@ -107,9 +110,13 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         ref.child(Constants.user + "/" + uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                User user = dataSnapshot.getValue(User.class);
-                if (user != null)
+                user = dataSnapshot.getValue(User.class);
+                if (user != null) {
                     makeViews(user);
+                    editProfile.setEnabled(true);
+                    editProfile.setOnClickListener(UserFragment.this);
+                }
+
             }
 
             @Override
@@ -121,8 +128,8 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     }
 
     private void makeViews(User user) {
-        if (user.picture != null)
-            Picasso.with(getActivity()).load(user.picture.get(0).url).into(image);
+        if (user.picture.size() > 0)
+            Picasso.with(getActivity()).load(user.picture.get(0)).into(image);
         nameTv.setText(user.name);
         workTv.setText(user.work);
         eduTv.setText(user.education);
@@ -132,16 +139,15 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         ageRange.setText(ages);
 
         agePicker.setDrawTicks(false);
-        agePicker.setRangePinsByValue(Integer.parseInt(ages.split("-")[0]),Integer.parseInt(ages.split("-")[1]));
+        agePicker.setRangePinsByValue(Integer.parseInt(ages.split("-")[0]), Integer.parseInt(ages.split("-")[1]));
         agePicker.setOnRangeBarChangeListener(new RangeBar.OnRangeBarChangeListener() {
             @Override
             public void onRangeChangeListener(RangeBar rangeBar, int leftPinIndex,
                                               int rightPinIndex,
                                               String leftPinValue, String rightPinValue) {
-                String ages=leftPinValue+"-"+rightPinValue;
+                String ages = leftPinValue + "-" + rightPinValue;
                 ageRange.setText(ages);
-                Log.e("ages-",ages);
-                sp.edit().putString("age_range",ages).commit();
+                sp.edit().putString("age_range", ages).commit();
                 onChangeAge(true);
             }
         });
@@ -176,10 +182,16 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-            if(v==logout){
-                // TODO: 1/24/2017 Call dialog
+        if (v == logout) {
+            // TODO: 1/24/2017 Call dialog
 
-            }
+        }
+        if (v == editProfile) {
+            Intent intent = new Intent(getActivity(), UserDeteailActivity.class);
+
+            intent.putExtra("User", user);
+            startActivity(intent);
+        }
 
     }
 

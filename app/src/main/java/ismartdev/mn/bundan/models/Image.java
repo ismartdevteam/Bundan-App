@@ -9,7 +9,7 @@ import java.util.Map;
  * Created by Ulzii on 1/11/2017.
  */
 
-public class Image {
+public class Image implements java.io.Serializable {
 
 
     public String url;

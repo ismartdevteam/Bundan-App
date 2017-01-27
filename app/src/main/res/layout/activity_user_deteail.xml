@@ -26,8 +26,8 @@
                 <ImageView
                     android:id="@+id/user_imagef"
                     android:layout_width="match_parent"
-                    android:background="@drawable/image_border"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent"
+                    android:background="@drawable/image_border" />
 
                 <ImageView
                     android:id="@+id/user_imagef_Btn"
@@ -36,7 +36,7 @@
                     android:layout_alignEnd="@+id/user_imagef"
                     android:layout_alignParentBottom="true"
                     android:layout_alignRight="@+id/user_imagef"
-                    android:src="@drawable/delete" />
+                    android:src="@drawable/plus" />
             </RelativeLayout>
 
             <LinearLayout
@@ -54,8 +54,8 @@
                     <ImageView
                         android:id="@+id/user_imagetwo"
                         android:layout_width="match_parent"
-                        android:background="@drawable/image_border"
-                        android:layout_height="match_parent" />
+                        android:layout_height="match_parent"
+                        android:background="@drawable/image_border" />
 
                     <ImageView
                         android:id="@+id/user_imagetwo_Btn"
@@ -76,8 +76,8 @@
                     <ImageView
                         android:id="@+id/user_imagethree"
                         android:layout_width="match_parent"
-                        android:background="@drawable/image_border"
-                        android:layout_height="match_parent" />
+                        android:layout_height="match_parent"
+                        android:background="@drawable/image_border" />
 
                     <ImageView
                         android:id="@+id/user_imagethree_Btn"
@@ -106,8 +106,8 @@
                 <ImageView
                     android:id="@+id/user_imagesix"
                     android:layout_width="match_parent"
-                    android:background="@drawable/image_border"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent"
+                    android:background="@drawable/image_border" />
 
                 <ImageView
                     android:id="@+id/user_imagesix_Btn"
@@ -128,8 +128,8 @@
                 <ImageView
                     android:id="@+id/user_imagefive"
                     android:layout_width="match_parent"
-                    android:background="@drawable/image_border"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent"
+                    android:background="@drawable/image_border" />
 
                 <ImageView
                     android:id="@+id/user_imagefive_Btn"
@@ -164,27 +164,31 @@
                     android:src="@drawable/plus" />
             </RelativeLayout>
         </LinearLayout>
+
         <TextView
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:padding="18dp"
-            android:layout_height="wrap_content"
-            android:text="Current work"/>
+            android:text="Current work" />
+
         <TextView
-            android:padding="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:id="@+id/user_work"
-            android:background="@android:color/white"/>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:padding="10dp" />
+
         <TextView
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:padding="18dp"
-            android:layout_height="wrap_content"
-            android:text="School"/>
+            android:text="School" />
+
         <TextView
-            android:padding="10dp"
+            android:id="@+id/user_school"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/user_school"
-            android:background="@android:color/white"/>
+            android:background="@android:color/white"
+            android:padding="10dp" />
     </LinearLayout>
 </ScrollView>

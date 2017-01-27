@@ -4,6 +4,7 @@ package ismartdev.mn.bundan.models;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,16 +13,16 @@ import java.util.Map;
  * Created by Ulzii on 7/20/2016.
  */
 @IgnoreExtraProperties
-public class User {
-    public String fb_id;
-    public String name;
-    public String birthday;
-    public  String gender;
-    public String work;
-    public String education;
+public class User implements java.io.Serializable {
+    public String fb_id="";
+    public String name="";
+    public String birthday="";
+    public  String gender="";
+    public String work="";
+    public String education="";
 
-    public String email;
-    public List<Image> picture;
+    public String email="";
+    public List<String> picture =new ArrayList<>();
     public String user_friends;
     public String user_likes;
 
@@ -29,7 +30,7 @@ public class User {
 
     }
     public User(String birthday, String education, String email, String gender, String fb_id,
-                String name, List<Image> picture, String work, String user_friends, String user_likes) {
+                String name, List<String> picture, String work, String user_friends, String user_likes) {
 
         this.birthday = birthday;
         this.education = education;

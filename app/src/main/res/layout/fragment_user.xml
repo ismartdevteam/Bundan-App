@@ -33,6 +33,7 @@
 
                 <Button
                     android:id="@+id/user_edit_btn"
+                    android:enabled="false"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignEnd="@+id/user_image"

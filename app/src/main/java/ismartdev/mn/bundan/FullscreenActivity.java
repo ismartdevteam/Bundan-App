@@ -231,7 +231,7 @@ public class FullscreenActivity extends BaseActivity {
                                 StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(getString(R.string.storage_path));
 
 
-                                StorageReference userImageRef = storageRef.child("user-photos/" + uid + "/fb_image1.jpg");
+                                StorageReference userImageRef = storageRef.child("user-photos/" + uid + "/image0.jpg");
 
                                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
@@ -254,18 +254,16 @@ public class FullscreenActivity extends BaseActivity {
                                         @Override
                                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
-                                            Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                                            String downloadUrl = taskSnapshot.getDownloadUrl().toString();
                                             SharedPreferences.Editor editor = sharedPreferences.edit();
 
-                                            User user = new User();
-                                            user.picture = new ArrayList<Image>();
-                                            user.picture.add(new Image(downloadUrl.toString()));
-                                            editor.putString("picture", user.picture.get(0).url);
+
+                                            editor.putString("picture", downloadUrl.toString());
                                             editor.commit();
 
                                             Map<String, Object> childUpdates = new HashMap<>();
-                                            childUpdates.put(Constants.user + "/" + uid + "/picture", user.picture);
-                                            childUpdates.put(Constants.user + "-" + gender + "/" + uid + "/picture", user.picture);
+                                            childUpdates.put(Constants.user + "/" + uid + "/picture/0", downloadUrl);
+                                            childUpdates.put(Constants.user + "-" + gender + "/" + uid + "/picture",downloadUrl);
                                             ref.updateChildren(childUpdates);
                                             startMainAc();
                                         }
@@ -286,8 +284,6 @@ public class FullscreenActivity extends BaseActivity {
         user.email = obj.getString("email");
         user.gender = obj.getString("gender");
         user.fb_id = obj.getString("id");
-//          user.picture=obj.getJSONObject("picture").getJSONObject("data").getString("url");
-
         user.name = obj.getString("name");
         user.work = getWork(obj.getJSONArray("work"));
         user.user_friends = obj.getJSONObject("friends") + "";
@@ -304,8 +300,7 @@ public class FullscreenActivity extends BaseActivity {
             editor.putString("gender", Constants.female);
         } else {
             editor.putString("gender", Constants.male);
-        }
-          editor.putString("birthday",user.birthday);
+        }editor.putString("birthday",user.birthday);
         editor.commit();
 
         try {
@@ -336,7 +331,7 @@ public class FullscreenActivity extends BaseActivity {
            try {
                JSONObject item=work.getJSONObject(0);
                if(!item.isNull("position"))
-               workStr=item.getJSONObject("position").getString("name")+" at";
+               workStr=item.getJSONObject("position").getString("name")+" at ";
                if(!item.isNull("employer"))
                    workStr=workStr+" "+item.getJSONObject("employer").getString("name");
                if(!item.isNull("location"))

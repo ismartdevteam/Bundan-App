@@ -17,6 +17,7 @@
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="facebook_app_id">726964594134724</string>
     <string name="error_url_null">URl is empty</string>
+    <string name="error_image">Image upload error</string>
 
     <string name="fb_login_protocol_scheme">fb726964594134724</string>
     <!-- TODO: Remove or change this placeholder text -->
