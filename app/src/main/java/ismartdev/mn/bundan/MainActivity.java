@@ -1,8 +1,10 @@
 package ismartdev.mn.bundan;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -27,6 +29,7 @@ import ismartdev.mn.bundan.util.SelectiveViewPager;
 public class MainActivity extends BaseActivity implements SearchFragment.OnFragmentInteractionListener, MessageFragment.OnFragmentInteractionListener, UserFragment.OnFragmentInteractionListener {
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
+    public static final int CARD_REQ = 1000;
     private static final String TAG = "MainActivity";
     private SelectiveViewPager mViewPager;
     private SharedPreferences sharedPreferences;
@@ -50,6 +53,7 @@ public class MainActivity extends BaseActivity implements SearchFragment.OnFragm
 
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.setOffscreenPageLimit(3);
+        mViewPager.setCurrentItem(1);
 
 
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -64,8 +68,8 @@ public class MainActivity extends BaseActivity implements SearchFragment.OnFragm
                     if (isSearchAgain) {
 
                         Log.e("isSearchAgain", isSearchAgain + "");
-                        isSearchAgain=false;
-                       SearchFragment fragment= SearchFragment.getInstance();
+                        isSearchAgain = false;
+                        SearchFragment fragment = SearchFragment.getInstance();
                         fragment.getListService();
 
                     }
@@ -80,20 +84,21 @@ public class MainActivity extends BaseActivity implements SearchFragment.OnFragm
     }
 
     private void checkFcm(SharedPreferences sp) {
-
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-        Log.e(TAG, refreshedToken + "refreshedToken");
         if (!TextUtils.isEmpty(refreshedToken)) {
             Log.e(TAG, "!TextUtils.isEmpty(refreshedToken)");
             sp.edit().putString(Constants.fcm, refreshedToken).commit();
-            ref.child(Constants.user).child(getUid()).child(Constants.fcm).setValue(refreshedToken);
+            ref.child(Constants.user).child(getUid()).child(Constants.user_info).child(Constants.fcm).setValue(refreshedToken);
         }
 
     }
 
 
     @Override
-    public void onFragmentInteraction(boolean isPager) {
+    public void onChangeViewPagerState(boolean isPager)
+
+    {
+        Log.e("setPaging", isPager + "---");
         mViewPager.setPaging(isPager);
     }
 
@@ -179,4 +184,22 @@ public class MainActivity extends BaseActivity implements SearchFragment.OnFragm
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.e("onActivityResult", requestCode + "-" + resultCode);
+        Log.e("onActivityResult", data.getBooleanExtra("interact", false) + "");
+        if (resultCode == RESULT_OK) {
+            final boolean swipe = data.getBooleanExtra("interact", false);
+            Log.e("onActivityResult", data.getBooleanExtra("interact", false) + "");
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    SearchFragment fragment = SearchFragment.getInstance();
+                    fragment.DoSwipe(swipe);
+                }
+            }, 1000);
+
+        }
+    }
 }

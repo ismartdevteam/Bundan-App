@@ -10,15 +10,13 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="18dp"
         android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/white"
-            android:orientation="vertical"
-            android:padding="18dp">
+            android:orientation="vertical">
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -31,15 +29,17 @@
                     android:layout_centerInParent="true"
                     android:scaleType="centerCrop" />
 
-                <Button
+                <ImageView
                     android:id="@+id/user_edit_btn"
-                    android:enabled="false"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignEnd="@+id/user_image"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginBottom="10dp"
                     android:layout_alignParentBottom="true"
                     android:layout_alignRight="@+id/user_image"
-                    android:text="x" />
+                    android:enabled="false"
+                    android:src="@drawable/edit_btn" />
 
             </RelativeLayout>
 
@@ -89,7 +89,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
-
+                    android:paddingBottom="10dp"
                     android:orientation="horizontal">
 
                     <TextView
@@ -107,6 +107,7 @@
                         <TextView
                             android:id="@+id/user_find_gender"
                             android:layout_width="wrap_content"
+
                             android:layout_height="wrap_content" />
 
                         <ImageView
@@ -168,6 +169,7 @@
             android:id="@+id/logout_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
             android:layout_marginLeft="18dp"
             android:layout_marginRight="18dp">
 

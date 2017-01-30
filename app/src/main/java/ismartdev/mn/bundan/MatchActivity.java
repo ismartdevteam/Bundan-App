@@ -1,5 +1,7 @@
 package ismartdev.mn.bundan;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -19,19 +21,20 @@ import ismartdev.mn.bundan.util.Constants;
 
 public class MatchActivity extends BaseActivity implements View.OnClickListener {
     private Bundle b;
-    private DatabaseReference ref;
     private CircleImageView myPic;
     private CircleImageView friendPic;
     private TextView matchedText;
     private Button sendMessage;
     private Button keepSwipe;
     private String uid;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_match);
+        sharedPreferences = getSharedPreferences(Constants.sp_search, Context.MODE_PRIVATE);
         myPic = (CircleImageView) findViewById(R.id.match_my_pic);
         friendPic = (CircleImageView) findViewById(R.id.match_friend_pic);
         matchedText = (TextView) findViewById(R.id.match_name);
@@ -39,41 +42,18 @@ public class MatchActivity extends BaseActivity implements View.OnClickListener 
         keepSwipe = (Button) findViewById(R.id.keep_swipe);
         sendMessage.setOnClickListener(this);
         keepSwipe.setOnClickListener(this);
-        ref = FirebaseDatabase.getInstance().getReference();
         b = getIntent().getExtras();
-        uid = b.getString("uid", "");
-        if (uid.equals("")) {
 
-            keepSwipe.setVisibility(View.GONE);
-            uid = b.getString("matched", "");
-        }
-        makePic(uid, true, friendPic);
-        makePic(getUid(), false, myPic);
+        keepSwipe.setVisibility(View.GONE);
+        uid = b.getString("matched", "");
+        matchedText.setText(String.format(getString(R.string.matchText), b.getString("name", "")));
+        Picasso.with(getApplicationContext()).
+                load(b.getString("picture", ""))
+                .into(friendPic);
+        Picasso.with(getApplicationContext()).
+                load(sharedPreferences.getString("picture", ""))
+                .into(myPic);
 
-    }
-
-    private void makePic(String userId, final boolean isIntent, final ImageView imageView) {
-        ref.child(Constants.user + "/" + userId).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.getValue() != null) {
-                    MatchedUser matchedUser = dataSnapshot.getValue(MatchedUser.class);
-                    if (isIntent) {
-                        matchedText.setText(String.format(getString(R.string.matchText), matchedUser.name));
-                    }
-                    Picasso.with(getApplicationContext()).
-                            load(matchedUser.picture)
-                            .into(imageView);
-
-                }
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
     }
 
 

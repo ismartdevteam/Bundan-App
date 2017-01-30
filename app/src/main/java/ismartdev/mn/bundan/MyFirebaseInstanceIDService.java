@@ -31,9 +31,8 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
         Log.e(TAG, token);
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             // TODO: Implement this method to send token to your app server.
-            Log.e(TAG, "islogged");
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-            databaseReference.child(Constants.user).child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child(Constants.fcm).setValue(token);
+            databaseReference.child(Constants.user).child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child(Constants.user_info).child(Constants.fcm).setValue(token);
         }
 
 

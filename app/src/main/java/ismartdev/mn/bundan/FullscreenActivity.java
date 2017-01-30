@@ -38,6 +38,9 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -62,7 +65,9 @@ import java.util.Map;
 import ismartdev.mn.bundan.models.Image;
 import ismartdev.mn.bundan.models.User;
 import ismartdev.mn.bundan.models.UserGender;
+import ismartdev.mn.bundan.models.UserSettings;
 import ismartdev.mn.bundan.util.Constants;
+import ismartdev.mn.bundan.util.Utils;
 
 
 public class FullscreenActivity extends BaseActivity {
@@ -91,7 +96,7 @@ public class FullscreenActivity extends BaseActivity {
         showProgressDialog();
         mAuth = FirebaseAuth.getInstance();
         if (mAuth.getCurrentUser() != null) {
-            Log.d(TAG,"is logged");
+            Log.d(TAG, "is logged");
             finish();
             startMainAc();
 
@@ -209,7 +214,7 @@ public class FullscreenActivity extends BaseActivity {
                     }
                 });
         Bundle parameters = new Bundle();
-        parameters.putString("fields", "id,name,gender,education,birthday,picture.type(large),email,friends,work,likes");
+        parameters.putString("fields", "id,name,gender,education,birthday,picture.type(large),email,work");
         request.setParameters(parameters);
         request.executeAsync();
     }
@@ -247,23 +252,18 @@ public class FullscreenActivity extends BaseActivity {
                                     uploadTask.addOnFailureListener(new OnFailureListener() {
                                         @Override
                                         public void onFailure(@NonNull Exception exception) {
-                                            // Handle unsuccessful uploads
                                             startMainAc();
                                         }
                                     }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                                         @Override
                                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
                                             String downloadUrl = taskSnapshot.getDownloadUrl().toString();
                                             SharedPreferences.Editor editor = sharedPreferences.edit();
-
-
                                             editor.putString("picture", downloadUrl.toString());
                                             editor.commit();
-
                                             Map<String, Object> childUpdates = new HashMap<>();
-                                            childUpdates.put(Constants.user + "/" + uid + "/picture/0", downloadUrl);
-                                            childUpdates.put(Constants.user + "-" + gender + "/" + uid + "/picture",downloadUrl);
+                                            childUpdates.put(Constants.user + "/" + uid + "/" + Constants.user_info + "/picture/0", downloadUrl);
+                                            childUpdates.put(Constants.user + "-" + gender + "/" + uid + "/picture", downloadUrl);
                                             ref.updateChildren(childUpdates);
                                             startMainAc();
                                         }
@@ -276,48 +276,80 @@ public class FullscreenActivity extends BaseActivity {
 
     }
 
-      private void addToFirebase(JSONObject obj, String uid) throws JSONException {
+    private void addToFirebase(JSONObject obj, String uid) throws JSONException {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         User user = new User();
-        user.birthday = df.format(new Date(obj.getString("birthday")));
+        Date date = new Date(obj.getString("birthday"));
+        user.birthday = df.format(date);
         user.education = getSchool(obj.getJSONArray("education"));
         user.email = obj.getString("email");
         user.gender = obj.getString("gender");
         user.fb_id = obj.getString("id");
         user.name = obj.getString("name");
         user.work = getWork(obj.getJSONArray("work"));
-        user.user_friends = obj.getJSONObject("friends") + "";
-        user.user_likes = obj.getJSONObject("likes") + "";
-        UserGender userGender = new UserGender(uid, user.birthday, user.fb_id, user.name,user.work);
+//        user.user_friends = obj.getJSONObject("friends") + "";
+//        user.user_likes = obj.getJSONObject("likes") + "";
+        UserGender userGender = new UserGender(uid, user.birthday, user.fb_id, user.name, user.work);
         Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put(Constants.user + "/" + uid, user.toMap());
+        childUpdates.put(Constants.user + "/" + uid + "/" + Constants.user_info, user.toMap());
         childUpdates.put(Constants.user + "-" + user.gender + "/" + uid, userGender.toMap());
 
         ref.updateChildren(childUpdates);
 
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        if (user.gender.equals(Constants.male)) {
-            editor.putString("gender", Constants.female);
-        } else {
-            editor.putString("gender", Constants.male);
-        }editor.putString("birthday",user.birthday);
-        editor.commit();
+        checkUserSettings(uid, user.gender, date);
 
         try {
             uploadImage(uid, user.fb_id, user.gender);
         } catch (IOException e) {
-            Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
             e.printStackTrace();
             hideProgressDialog();
         }
     }
-    private String getSchool(JSONArray school) {
-        String schoolStr="";
-        if(school.length()>0){
-            try {
-                JSONObject item=school.getJSONObject(0);
 
-                    schoolStr=item.getJSONObject("school").getString("name");
+    private void checkUserSettings(final String uid, final String gender, final Date birthday) {
+        ref.child(Constants.user + uid).child(Constants.user_settings).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                UserSettings settings = dataSnapshot.getValue(UserSettings.class);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                if (settings != null) {
+                    editor.putString("gender", settings.gender);
+                    editor.putString("age_range", settings.age_range);
+                    editor.commit();
+                } else {
+                    UserSettings userSettings = new UserSettings();
+                    userSettings.gender = gender.equals("male") ? "female" : "male";
+                    int age = Utils.getAge(birthday);
+                    int firstAge = age <= 22 ? 18 : age - 4;
+                    int lastAge = age + 4;
+                    userSettings.age_range = firstAge + "-" + lastAge;
+                    editor.putString("gender", userSettings.gender);
+                    editor.putString("age_range", userSettings.age_range);
+                    editor.commit();
+                    Map<String, Object> childUpdates = new HashMap<>();
+                    childUpdates.put(Constants.user + "/" + uid + "/" + Constants.user_settings, userSettings.toMap());
+                    ref.updateChildren(childUpdates);
+                }
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    private String getSchool(JSONArray school) {
+        String schoolStr = "";
+        if (school.length() > 0) {
+            try {
+                JSONObject item = school.getJSONObject(0);
+
+                schoolStr = item.getJSONObject("school").getString("name");
                 return schoolStr;
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -325,22 +357,23 @@ public class FullscreenActivity extends BaseActivity {
         }
         return "";
     }
+
     private String getWork(JSONArray work) {
-        String workStr="";
-       if(work.length()>0){
-           try {
-               JSONObject item=work.getJSONObject(0);
-               if(!item.isNull("position"))
-               workStr=item.getJSONObject("position").getString("name")+" at ";
-               if(!item.isNull("employer"))
-                   workStr=workStr+" "+item.getJSONObject("employer").getString("name");
-               if(!item.isNull("location"))
-                   workStr=workStr+" "+item.getJSONObject("location").getString("name");
-               return workStr;
-           } catch (JSONException e) {
-               e.printStackTrace();
-           }
-       }
+        String workStr = "";
+        if (work.length() > 0) {
+            try {
+                JSONObject item = work.getJSONObject(0);
+                if (!item.isNull("position"))
+                    workStr = item.getJSONObject("position").getString("name") + " at ";
+                if (!item.isNull("employer"))
+                    workStr = workStr + " " + item.getJSONObject("employer").getString("name");
+                if (!item.isNull("location"))
+                    workStr = workStr + " " + item.getJSONObject("location").getString("name");
+                return workStr;
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
         return "";
     }
 

@@ -1,10 +1,10 @@
 package ismartdev.mn.bundan.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,18 +14,22 @@ import android.widget.ImageButton;
 import com.mindorks.placeholderview.SwipeDecor;
 import com.mindorks.placeholderview.SwipePlaceHolderView;
 import com.mindorks.placeholderview.listeners.ItemRemovedListener;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 import ismartdev.mn.bundan.MainActivity;
 import ismartdev.mn.bundan.R;
+import ismartdev.mn.bundan.TinderCardDetail;
 import ismartdev.mn.bundan.models.SearchList;
 import ismartdev.mn.bundan.models.SearchParams;
 import ismartdev.mn.bundan.models.UserGender;
 import ismartdev.mn.bundan.util.ApiClient;
 import ismartdev.mn.bundan.util.ApiInterface;
+import ismartdev.mn.bundan.util.CircleImageView;
 import ismartdev.mn.bundan.util.Constants;
 import ismartdev.mn.bundan.views.TinderCard;
+import pl.bclogic.pulsator4droid.library.PulsatorLayout;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -55,6 +59,8 @@ public class SearchFragment extends Fragment implements View.OnClickListener, Ti
     private String age_range;
     private ApiInterface apiService;
     private SwipePlaceHolderView mSwipView;
+    private PulsatorLayout mPulsator;
+    private CircleImageView userImage;
 
     public SearchFragment() {
     }
@@ -89,6 +95,11 @@ public class SearchFragment extends Fragment implements View.OnClickListener, Ti
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_home, container, false);
+        sp = getActivity().getSharedPreferences(Constants.sp_search, Context.MODE_PRIVATE);
+
+        userImage = (CircleImageView) v.findViewById(R.id.user_image);
+        Picasso.with(getActivity()).load(sp.getString("picture", "")).into(userImage);
+        mPulsator = (PulsatorLayout) v.findViewById(R.id.pulsator);
         ImageButton dislike = (ImageButton) v.findViewById(R.id.search_dislike);
         ImageButton like = (ImageButton) v.findViewById(R.id.search_like);
         dislike.setOnClickListener(this);
@@ -98,7 +109,11 @@ public class SearchFragment extends Fragment implements View.OnClickListener, Ti
         mSwipView.addItemRemoveListener(new ItemRemovedListener() {
             @Override
             public void onItemRemoved(int count) {
-                Log.e(TAG, count + "--");
+                Log.e("count", count + "---");
+                if (count == 0) {
+                    Log.e("count", "0");
+                    makePulsar();
+                }
 
 
             }
@@ -117,16 +132,23 @@ public class SearchFragment extends Fragment implements View.OnClickListener, Ti
         return v;
     }
 
+    private void makePulsar() {
+        if (mSwipView.getChildCount() > 0)
+            mSwipView.removeAllViews();
+        mPulsator.setCount(4);
+        mPulsator.start();
+        changeStateViewpager(true);
+    }
+
     @Override
     public void onResume() {
         super.onResume();
 
     }
-    private void addSearchView(){
 
-    }
     public void getListService() {
-        sp = getActivity().getSharedPreferences(Constants.sp_search, Context.MODE_PRIVATE);
+
+        makePulsar();
         gender = sp.getString("gender", "female");
         age_range = sp.getString("age_range", "18-22");
         String limit = sp.getString("limit", "20");
@@ -134,7 +156,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener, Ti
         apiService =
                 ApiClient.getClient(Constants.url).create(ApiInterface.class);
         SearchParams searchParams = new SearchParams(age_range, gender, limit, uid);
-        Log.e("SearchParams",searchParams.getUid()+"-"+searchParams.getAge_range()+"-"+searchParams.getGender());
+        Log.e("SearchParams", searchParams.getUid() + "-" + searchParams.getAge_range() + "-" + searchParams.getGender());
 
         Call<SearchList> call = apiService.searchPeople(searchParams);
         call.enqueue(new Callback<SearchList>() {
@@ -142,8 +164,12 @@ public class SearchFragment extends Fragment implements View.OnClickListener, Ti
             public void onResponse(Call<SearchList> call, Response<SearchList> response) {
                 if (response.body().getCode() == 200) {
                     List<UserGender> searchList = response.body().getData();
-                    mSwipView.removeAllViews();
-                    makeTinderList(searchList);
+                    if (searchList.size() > 0) {
+                        stopPulsar();
+                        makeTinderList(searchList);
+                    }
+
+
                 }
             }
 
@@ -156,7 +182,13 @@ public class SearchFragment extends Fragment implements View.OnClickListener, Ti
 
     }
 
+    private void stopPulsar() {
+        mPulsator.stop();
+        changeStateViewpager(false);
+    }
+
     private void makeTinderList(List<UserGender> userGenders) {
+
         for (UserGender item : userGenders) {
             mSwipView.addView(new TinderCard(uid, getActivity(), item, this, gender, age_range));
         }
@@ -166,7 +198,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener, Ti
 
     public void changeStateViewpager(boolean isPager) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(isPager);
+            mListener.onChangeViewPagerState(isPager);
         }
     }
 
@@ -202,19 +234,34 @@ public class SearchFragment extends Fragment implements View.OnClickListener, Ti
         }
     }
 
+    public void DoSwipe(boolean swipe){
+        mSwipView.doSwipe(swipe);
+    }
     @Override
     public void onSwiping() {
-        changeStateViewpager(false);
+
     }
 
     @Override
     public void onSwipingEnd() {
-        changeStateViewpager(true);
+
+
     }
+
+    @Override
+    public void onClickCard(UserGender gender) {
+        Bundle b = new Bundle();
+        b.putString("name", gender.getName() + "," + gender.getAge());
+        b.putString("uid", gender.getUid());
+        Intent intent = new Intent(getActivity(), TinderCardDetail.class);
+        intent.putExtras(b);
+        startActivityForResult(intent, MainActivity.CARD_REQ);
+    }
+
 
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(boolean isPager);
+        void onChangeViewPagerState(boolean isPager);
     }
 
 }

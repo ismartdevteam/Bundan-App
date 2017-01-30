@@ -4,14 +4,17 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -31,8 +34,10 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.mvc.imagepicker.ImagePicker;
+import com.soundcloud.android.crop.Crop;
 import com.squareup.picasso.Picasso;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -72,12 +77,15 @@ public class UserDeteailActivity extends BaseActivity implements View.OnClickLis
     private int workPos = -1;
 
     private CustomAdapter customAdapter;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_deteail);
-        ImagePicker.setMinQuality(600, 600);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        sharedPreferences = getSharedPreferences(Constants.sp_search, Context.MODE_PRIVATE);
 
 
         user = (User) getIntent().getSerializableExtra("User");
@@ -112,27 +120,50 @@ public class UserDeteailActivity extends BaseActivity implements View.OnClickLis
         if (user.picture.size() > 0) {
             for (int i = 0; i < user.picture.size(); i++) {
                 setUploadImage(i, user.picture.get(i));
-
             }
         }
-        getFbWorkDatas();
-        getFbEducationDatas();
+//        getFbWorkDatas();
+        getFbDatas();
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            default:
+                return false;
+        }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Bitmap bitmap = ImagePicker.getImageFromResult(this, requestCode, resultCode, data);
-        try {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
-            uploadImage(BitmapFactory.decodeStream(new ByteArrayInputStream(out.toByteArray())));
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (requestCode == Crop.REQUEST_PICK && resultCode == RESULT_OK) {
+            CropImage.activity(data.getData())
+                    .setGuidelines(CropImageView.Guidelines.ON)
+                    .setAspectRatio(1,1)
+                    .start(this);
         }
-        // TODO do something with the bitmap
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == RESULT_OK) {
+                try {
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), result.getUri());
+                    ByteArrayOutputStream out = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 60, out);
+                    uploadImage(BitmapFactory.decodeStream(new ByteArrayInputStream(out.toByteArray())));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                Exception error = result.getError();
+            }
+        }
     }
 
-    private void getFbWorkDatas() {
+
+    private void getFbDatas() {
         GraphRequest request = GraphRequest.newMeRequest(
                 AccessToken.getCurrentAccessToken(),
                 new GraphRequest.GraphJSONObjectCallback() {
@@ -142,36 +173,40 @@ public class UserDeteailActivity extends BaseActivity implements View.OnClickLis
                             GraphResponse response) {
                         Log.e("data", response.getRawResponse() + "");
                         try {
+                            JSONArray edu = object.getJSONArray("education");
+                            if (edu.length() > 0) {
+
+                                for (int i = 0; i < edu.length(); i++) {
+                                    JSONObject item = edu.getJSONObject(i);
+                                    String str = item.getJSONObject("school").getString("name");
+                                    schoolList.add(str);
+                                    if (str.equals(user.education))
+                                        schoolPos = i;
+                                }
+                            }
                             JSONArray work = object.getJSONArray("work");
                             if (work.length() > 0) {
-                                try {
-                                    for (int i = 0; i < work.length(); i++) {
-                                        JSONObject item = work.getJSONObject(i);
-                                        String str = "";
-                                        boolean isEmployee = false;
-                                        if (!item.isNull("position")) {
-                                            str = item.getJSONObject("position").getString("name") + " at ";
-                                            workList.add(item.getJSONObject("position").getString("name"));
+                                for (int i = 0; i < work.length(); i++) {
+                                    JSONObject item = work.getJSONObject(i);
+                                    String str = "";
+                                    boolean isEmployee = false;
+                                    if (!item.isNull("position")) {
+                                        str = item.getJSONObject("position").getString("name") + " at ";
+                                        workList.add(item.getJSONObject("position").getString("name"));
+                                        workList.add(item.getJSONObject("employer").getString("name"));
+                                        isEmployee = true;
+                                    }
+                                    if (!item.isNull("employer")) {
+                                        if (!str.equals(""))
+                                            str = str + " " + item.getJSONObject("employer").getString("name");
+                                    }
+                                    if (!item.isNull("location")) {
+                                        str = str + " " + item.getJSONObject("location").getString("name");
+                                        workList.add(item.getJSONObject("location").getString("name"));
+                                        if (!isEmployee)
                                             workList.add(item.getJSONObject("employer").getString("name"));
-                                            isEmployee = true;
-                                        }
-                                        if (!item.isNull("employer")) {
-                                            if (!str.equals(""))
-                                                str = str + " " + item.getJSONObject("employer").getString("name");
-                                        }
-                                        if (!item.isNull("location")) {
-                                            str = str + " " + item.getJSONObject("location").getString("name");
-                                            workList.add(item.getJSONObject("location").getString("name"));
-                                            if (!isEmployee)
-                                                workList.add(item.getJSONObject("employer").getString("name"));
-                                        }
-
-                                        workList.add(str);
-
-
                                     }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
+                                    workList.add(str);
                                 }
                             }
 
@@ -183,45 +218,7 @@ public class UserDeteailActivity extends BaseActivity implements View.OnClickLis
                     }
                 });
         Bundle parameters = new Bundle();
-        parameters.putString("fields", "work");
-        request.setParameters(parameters);
-        request.executeAsync();
-    }
-
-    private void getFbEducationDatas() {
-        GraphRequest request = GraphRequest.newMeRequest(
-                AccessToken.getCurrentAccessToken(),
-                new GraphRequest.GraphJSONObjectCallback() {
-                    @Override
-                    public void onCompleted(
-                            JSONObject object,
-                            GraphResponse response) {
-                        Log.e("data", response.getRawResponse() + "");
-                        try {
-                            JSONArray work = object.getJSONArray("education");
-                            if (work.length() > 0) {
-                                try {
-                                    for (int i = 0; i < work.length(); i++) {
-                                        JSONObject item = work.getJSONObject(i);
-                                        String str = item.getJSONObject("school").getString("name");
-                                        schoolList.add(str);
-                                        if (str.equals(user.education))
-                                            schoolPos = i;
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-
-                    }
-                });
-        Bundle parameters = new Bundle();
-        parameters.putString("fields", "education");
+        parameters.putString("fields", "education,work");
         request.setParameters(parameters);
         request.executeAsync();
     }
@@ -229,7 +226,7 @@ public class UserDeteailActivity extends BaseActivity implements View.OnClickLis
     @Override
     public void onClick(View v) {
         if (v == imageOneBtn || v == imageTwoBtn || v == imageThreeBtn || v == imageFourBtn || v == imageFiveBtn || v == imageSixBtn) {
-            ImagePicker.pickImage(this, "Select your image:");
+            Crop.pickImage(UserDeteailActivity.this);
         }
         if (v == schoolTv) {
             callDialog(0);
@@ -265,16 +262,16 @@ public class UserDeteailActivity extends BaseActivity implements View.OnClickLis
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
                 String downloadUrl = taskSnapshot.getDownloadUrl().toString();
-
-
                 Map<String, Object> childUpdates = new HashMap<>();
-                childUpdates.put(Constants.user + "/" + getUid() + "/picture/" + index, downloadUrl);
-                if (index == 0)
+                childUpdates.put(Constants.user + "/" + getUid() + "/" + Constants.user_info + "/picture/" + index, downloadUrl);
+                if (index == 0) {
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("picture", downloadUrl);
+                    editor.commit();
                     childUpdates.put(Constants.user + "-" + user.gender + "/" + getUid() + "/picture", downloadUrl);
+                }
                 ref.updateChildren(childUpdates);
-
                 setUploadImage(index, downloadUrl);
                 user.picture.add(downloadUrl);
                 hideProgressDialog();
@@ -328,7 +325,7 @@ public class UserDeteailActivity extends BaseActivity implements View.OnClickLis
                 String updateName = mode == 0 ? "education" : "work";
                 String updateValue = mode == 0 ? schoolList.get(position) : workList.get(position);
 
-                childUpdates.put(Constants.user + "/" + getUid() + "/" + updateName, updateValue);
+                childUpdates.put(Constants.user + "/" + getUid() + "/" + Constants.user_info + "/" + updateName, updateValue);
                 if (mode == 1)
                     childUpdates.put(Constants.user + "-" + user.gender + "/" + getUid() + "/work", updateValue);
                 ref.updateChildren(childUpdates);
@@ -359,7 +356,7 @@ public class UserDeteailActivity extends BaseActivity implements View.OnClickLis
                 } else {
                     workTv.setText("None");
                 }
-                childUpdates.put(Constants.user + "/" + getUid() + "/" + updateName, updateValue);
+                childUpdates.put(Constants.user + "/" + getUid() + "/" + Constants.user_info + "/" + updateName, updateValue);
                 if (mode == 1)
                     childUpdates.put(Constants.user + "-" + user.gender + "/" + getUid() + "/work", updateValue);
 

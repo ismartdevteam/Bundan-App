@@ -40,12 +40,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
 
         if (remoteMessage.getNotification() != null) {
-            Log.e(TAG,"notification");
+            Log.e(TAG, "notification");
             if (data != null) {
                 Log.e(TAG,data.get("matched"));
                 Bundle b = new Bundle();
                 if (!TextUtils.isEmpty(data.get("matched"))) {
-                    b.putString("uid", remoteMessage.getData().get("matched"));
+                    b.putString("matched", remoteMessage.getData().get("matched"));
+                    b.putString("picture", remoteMessage.getData().get("picture"));
+                    b.putString("name", remoteMessage.getData().get("name"));
                     Intent matchIntent = new Intent(getApplicationContext(), MatchActivity.class);
                     matchIntent.putExtras(b);
                     matchIntent.setFlags(FLAG_ACTIVITY_NEW_TASK);
@@ -54,7 +56,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
 
             } else {
-                sendNotification(remoteMessage.getNotification().getTitle(), remoteMessage.getNotification().getTitle());
+            sendNotification(remoteMessage.getNotification().getTitle(), remoteMessage.getNotification().getTitle());
             }
 
         }

@@ -96,7 +96,7 @@ public class MessageFragment extends Fragment {
         mRecyclerView.setLayoutManager(layoutManager);
 
         matchAdapter = new FirebaseRecyclerAdapter<UserMatched, MatchViewHolder>(UserMatched.class, R.layout.match_item, MatchViewHolder.class,
-                ref.child(Constants.user_matches +uid).orderByChild("ischat").startAt("no").getRef()) {
+                ref.child(Constants.matches +uid).orderByChild("ischat").startAt("no").getRef()) {
             @Override
             protected void populateViewHolder(final MatchViewHolder viewHolder, final UserMatched userMatched, int position, String key) {
                 Log.e("usermatche",userMatched.getDate()+"--");

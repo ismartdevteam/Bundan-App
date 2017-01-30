@@ -14,21 +14,22 @@ import java.util.Map;
  */
 @IgnoreExtraProperties
 public class User implements java.io.Serializable {
-    public String fb_id="";
-    public String name="";
-    public String birthday="";
-    public  String gender="";
-    public String work="";
-    public String education="";
+    public String fb_id = "";
+    public String name = "";
+    public String birthday = "";
+    public String gender = "";
+    public String work = "";
+    public String education = "";
 
-    public String email="";
-    public List<String> picture =new ArrayList<>();
+    public String email = "";
+    public List<String> picture = new ArrayList<>();
     public String user_friends;
     public String user_likes;
 
-    public User (){
+    public User() {
 
     }
+
     public User(String birthday, String education, String email, String gender, String fb_id,
                 String name, List<String> picture, String work, String user_friends, String user_likes) {
 
@@ -43,6 +44,7 @@ public class User implements java.io.Serializable {
         this.user_friends = user_friends;
         this.user_likes = user_likes;
     }
+
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();

@@ -18,22 +18,26 @@ public class UserMatched {
     private Map<String, String> createDate;
 
     private long date;
+    private String uid;
 
 
     public UserMatched() {
 
     }
 
-    public UserMatched(boolean isChat, Map<String, String> createDate) {
+    public UserMatched(boolean isChat, Map<String, String> createDate,String uid) {
         this.isChat = isChat;
+        this.uid = uid;
         this.createDate = createDate;
     }
 
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
+        result.put("uid", uid);
         result.put("date", createDate);
-        result.put("isChat", isChat);
+
+//        result.put("isChat", isChat);
 
 
         return result;
