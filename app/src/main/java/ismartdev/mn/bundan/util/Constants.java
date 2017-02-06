@@ -8,7 +8,7 @@ public class Constants {
     public static final String url = "https://bundan-e28d3.appspot-preview.com/";
     public static final String fcm = "fcm";
     public static final String matches = "matches/";
-    public static final String user_messages = "user-messages/";
+    public static final String user_matches = "user-matches";
     public static final String sp_search = "sp_search";
     public static final String sp_app = "sp_app";
     public static final String app_run = "app_run";

@@ -142,7 +142,7 @@ public class TinderCard {
 
                     if (dataSnapshot.getValue() != null) {
                         DatabaseReference newRef=FirebaseDatabase.getInstance().getReference();
-                        String newMatchkey = newRef.child(Constants.user_messages).push().getKey();
+                        String newMatchkey = newRef.child(Constants.user_matches).push().getKey();
                         UserMatched userMatchedMe = new UserMatched(false, ServerValue.TIMESTAMP, uid);
                         UserMatched userMatchedInter = new UserMatched(false, ServerValue.TIMESTAMP, interUser.getUid());
                         Map<String, Object> childUpdates = new HashMap<>();

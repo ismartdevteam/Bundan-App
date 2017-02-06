@@ -14,55 +14,121 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:orientation="horizontal">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="10dp"
-                android:layout_weight="2">
-
-                <ImageView
-                    android:id="@+id/user_imagef"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/image_border" />
-
-                <ImageView
-                    android:id="@+id/user_imagef_Btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignEnd="@+id/user_imagef"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignRight="@+id/user_imagef"
-                    android:src="@drawable/plus" />
-            </RelativeLayout>
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:weightSum="3">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="3"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
                 android:orientation="vertical">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_margin="10dp"
-                    android:layout_weight="2">
+                    android:layout_height="wrap_content">
+
+                    <ismartdev.mn.bundan.util.SquaredImageView
+                        android:id="@+id/user_imagef"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/image_border" />
 
                     <ImageView
-                        android:id="@+id/user_imagetwo"
+                        android:id="@+id/user_imagef_Btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@+id/user_imagef"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:src="@drawable/plus" />
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:layout_marginRight="5dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_weight="1">
+
+                        <ismartdev.mn.bundan.util.SquaredImageView
+                            android:id="@+id/user_imagesix"
+                            android:layout_width="match_parent"
+                            android:layout_margin="2dp"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/image_border" />
+
+                        <ImageView
+                            android:id="@+id/user_imagesix_Btn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignBottom="@+id/user_imagesix"
+                            android:layout_alignEnd="@+id/user_imagesix"
+                            android:layout_alignRight="@+id/user_imagesix"
+                            android:src="@drawable/plus" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_weight="1">
+
+                        <ismartdev.mn.bundan.util.SquaredImageView
+                            android:id="@+id/user_imagefive"
+                            android:layout_width="match_parent"
+                            android:layout_margin="2dp"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/image_border" />
+
+                        <ImageView
+                            android:id="@+id/user_imagefive_Btn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignBottom="@+id/user_imagefive"
+                            android:layout_alignEnd="@+id/user_imagefive"
+                            android:layout_alignRight="@+id/user_imagefive"
+                            android:src="@drawable/plus" />
+                    </RelativeLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:layout_weight="2"
+                android:orientation="vertical"
+                android:weightSum="3">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+
+                    <ismartdev.mn.bundan.util.SquaredImageView
+                        android:id="@+id/user_imagetwo"
+                        android:layout_width="match_parent"
+                        android:layout_alignParentTop="true"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
                         android:background="@drawable/image_border" />
 
                     <ImageView
                         android:id="@+id/user_imagetwo_Btn"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_alignBottom="@+id/user_imagetwo"
                         android:layout_alignEnd="@+id/user_imagetwo"
-                        android:layout_alignParentBottom="true"
                         android:layout_alignRight="@+id/user_imagetwo"
                         android:src="@drawable/plus" />
                 </RelativeLayout>
@@ -70,100 +136,51 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_margin="10dp"
-                    android:layout_weight="2">
+                    android:layout_weight="1">
 
-                    <ImageView
+                    <ismartdev.mn.bundan.util.SquaredImageView
                         android:id="@+id/user_imagethree"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
                         android:background="@drawable/image_border" />
 
                     <ImageView
                         android:id="@+id/user_imagethree_Btn"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_alignBottom="@+id/user_imagethree"
                         android:layout_alignEnd="@+id/user_imagethree"
-                        android:layout_alignParentBottom="true"
                         android:layout_alignRight="@+id/user_imagethree"
+                        android:src="@drawable/plus" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+
+                    android:layout_weight="1">
+
+                    <ismartdev.mn.bundan.util.SquaredImageView
+                        android:id="@+id/user_imagefour"
+                        android:layout_width="match_parent"
+                        android:layout_margin="10dp"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/image_border" />
+
+                    <ImageView
+                        android:id="@+id/user_imagefour_Btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@+id/user_imagefour"
+                        android:layout_alignEnd="@+id/user_imagefour"
+                        android:layout_alignRight="@+id/user_imagefour"
                         android:src="@drawable/plus" />
                 </RelativeLayout>
             </LinearLayout>
 
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:orientation="horizontal">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="10dp"
-                android:layout_weight="1">
-
-                <ImageView
-                    android:id="@+id/user_imagesix"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/image_border" />
-
-                <ImageView
-                    android:id="@+id/user_imagesix_Btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignEnd="@+id/user_imagesix"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignRight="@+id/user_imagesix"
-                    android:src="@drawable/plus" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="10dp"
-                android:layout_weight="1">
-
-                <ImageView
-                    android:id="@+id/user_imagefive"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/image_border" />
-
-                <ImageView
-                    android:id="@+id/user_imagefive_Btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignEnd="@+id/user_imagefive"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignRight="@+id/user_imagefive"
-                    android:src="@drawable/plus" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="10dp"
-
-                android:layout_weight="1">
-
-                <ImageView
-                    android:id="@+id/user_imagefour"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/image_border" />
-
-                <ImageView
-                    android:id="@+id/user_imagefour_Btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignEnd="@+id/user_imagefour"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignRight="@+id/user_imagefour"
-                    android:src="@drawable/plus" />
-            </RelativeLayout>
-        </LinearLayout>
 
         <TextView
             android:layout_width="match_parent"
