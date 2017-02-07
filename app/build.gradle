@@ -62,6 +62,7 @@ dependencies {
     compile 'com.soundcloud.android:android-crop:1.0.1@aar'
     compile 'pl.bclogic:pulsator4droid:1.0.3'
     compile 'com.theartofdev.edmodo:android-image-cropper:2.3.1'
+    compile 'me.relex:circleindicator:1.2.2@aar'
 
 }
 

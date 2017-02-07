@@ -122,7 +122,6 @@ public class UserDeteailActivity extends BaseActivity implements View.OnClickLis
                 setUploadImage(i, user.picture.get(i));
             }
         }
-//        getFbWorkDatas();
         getFbDatas();
     }
 
@@ -142,7 +141,7 @@ public class UserDeteailActivity extends BaseActivity implements View.OnClickLis
         if (requestCode == Crop.REQUEST_PICK && resultCode == RESULT_OK) {
             CropImage.activity(data.getData())
                     .setGuidelines(CropImageView.Guidelines.ON)
-                    .setAspectRatio(1,1)
+                    .setAspectRatio(1, 1)
                     .start(this);
         }
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
@@ -158,6 +157,7 @@ public class UserDeteailActivity extends BaseActivity implements View.OnClickLis
                 }
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
+                Toast.makeText(UserDeteailActivity.this, error.toString(), Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -225,8 +225,39 @@ public class UserDeteailActivity extends BaseActivity implements View.OnClickLis
 
     @Override
     public void onClick(View v) {
-        if (v == imageOneBtn || v == imageTwoBtn || v == imageThreeBtn || v == imageFourBtn || v == imageFiveBtn || v == imageSixBtn) {
+        if (v == imageOneBtn) {
             Crop.pickImage(UserDeteailActivity.this);
+        }
+        if (v == imageTwoBtn || v == imageThreeBtn || v == imageFourBtn || v == imageFiveBtn || v == imageSixBtn) {
+            DeleteModel deleteModel = (DeleteModel) v.getTag();
+            if (deleteModel != null) {
+
+                deleteImage(deleteModel.index);
+                v.setTag(null);
+                switch (deleteModel.index) {
+                    case 1:
+                        imageTwoBtn.setImageResource(R.drawable.plus);
+                        imageTwo.setImageResource(0);
+                        break;
+                    case 2:
+                        imageThreeBtn.setImageResource(R.drawable.plus);
+                        imageThree.setImageResource(0);
+                        break;
+                    case 3:
+                        imageFourBtn.setImageResource(R.drawable.plus);
+                        imageFour.setImageResource(0);
+                        break;
+                    case 4:
+                        imageFiveBtn.setImageResource(R.drawable.plus);
+                        imageFive.setImageResource(0);
+                        break;
+                    case 5:
+                        imageSixBtn.setImageResource(R.drawable.plus);
+                        imageSix.setImageResource(0);
+                        break;
+                }
+            } else
+                Crop.pickImage(UserDeteailActivity.this);
         }
         if (v == schoolTv) {
             callDialog(0);
@@ -236,6 +267,13 @@ public class UserDeteailActivity extends BaseActivity implements View.OnClickLis
         }
     }
 
+    class DeleteModel {
+        public int index;
+    }
+
+    private void deleteImage(int index) {
+        ref.child(Constants.user + "/" + getUid() + "/" + Constants.user_info + "/picture/" + index).removeValue();
+    }
 
     private void uploadImage(Bitmap responseImage) throws IOException {
         showProgressDialog();
@@ -439,35 +477,53 @@ public class UserDeteailActivity extends BaseActivity implements View.OnClickLis
 
 
     private void setUploadImage(int index, String url) {
+
         switch (index) {
             case 0:
                 Picasso.with(this).load(url).into(imageOne);
 
                 imageOneBtn.setImageResource(R.drawable.delete);
+
                 break;
             case 1:
                 Picasso.with(this).load(url).into(imageTwo);
 
                 imageTwoBtn.setImageResource(R.drawable.delete);
+                DeleteModel deleteModel = new DeleteModel();
+                deleteModel.index = index;
+                imageTwoBtn.setTag(deleteModel);
                 break;
             case 2:
                 Picasso.with(this).load(url).into(imageThree);
 
                 imageThreeBtn.setImageResource(R.drawable.delete);
+
+                DeleteModel deleteModel2 = new DeleteModel();
+                deleteModel2.index = index;
+                imageThreeBtn.setTag(deleteModel2);
                 break;
             case 3:
                 Picasso.with(this).load(url).into(imageFour);
 
                 imageFourBtn.setImageResource(R.drawable.delete);
+                DeleteModel deleteModel3 = new DeleteModel();
+                deleteModel3.index = index;
+                imageFourBtn.setTag(deleteModel3);
                 break;
             case 4:
                 Picasso.with(this).load(url).into(imageFive);
 
                 imageFiveBtn.setImageResource(R.drawable.delete);
+                DeleteModel deleteModel4 = new DeleteModel();
+                deleteModel4.index = index;
+                imageFiveBtn.setTag(deleteModel4);
                 break;
             case 5:
                 Picasso.with(this).load(url).into(imageSix);
                 imageSixBtn.setImageResource(R.drawable.delete);
+                DeleteModel deleteModel5 = new DeleteModel();
+                deleteModel5.index = index;
+                imageSixBtn.setTag(deleteModel5);
                 break;
 
         }

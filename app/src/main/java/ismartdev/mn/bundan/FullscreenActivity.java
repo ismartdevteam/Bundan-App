@@ -262,7 +262,7 @@ public class FullscreenActivity extends BaseActivity {
                                             editor.putString("picture", downloadUrl.toString());
                                             editor.commit();
                                             Map<String, Object> childUpdates = new HashMap<>();
-                                            childUpdates.put(Constants.user + "/" + uid + "/" + Constants.user_info + "/picture/0", downloadUrl);
+                                            childUpdates.put(Constants.user + "/" + uid + "/" + Constants.user_info + "/picture/0/", downloadUrl);
                                             childUpdates.put(Constants.user + "-" + gender + "/" + uid + "/picture", downloadUrl);
                                             ref.updateChildren(childUpdates);
                                             startMainAc();
@@ -276,7 +276,12 @@ public class FullscreenActivity extends BaseActivity {
 
     }
 
+
+
     private void addToFirebase(JSONObject obj, String uid) throws JSONException {
+        if()
+
+
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         User user = new User();
         Date date = new Date(obj.getString("birthday"));

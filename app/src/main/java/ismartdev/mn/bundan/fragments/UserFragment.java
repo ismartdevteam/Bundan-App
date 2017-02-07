@@ -166,10 +166,11 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                                               String leftPinValue, String rightPinValue) {
                 String ages = leftPinValue + "-" + rightPinValue;
 
-                sp.edit().putString("age_range", ages).commit();
+
                 Map<String, Object> childUpdates = new HashMap<>();
                 childUpdates.put(Constants.user + "/" + uid + "/" + Constants.user_settings + "/age_range", ages);
                 ref.updateChildren(childUpdates);
+                sp.edit().putString("age_range", ages).commit();
                 onChangeAge(true);
             }
         });

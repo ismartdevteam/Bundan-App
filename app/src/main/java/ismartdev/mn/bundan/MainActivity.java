@@ -187,19 +187,20 @@ public class MainActivity extends BaseActivity implements SearchFragment.OnFragm
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.e("onActivityResult", requestCode + "-" + resultCode);
-        Log.e("onActivityResult", data.getBooleanExtra("interact", false) + "");
+
         if (resultCode == RESULT_OK) {
-            final boolean swipe = data.getBooleanExtra("interact", false);
-            Log.e("onActivityResult", data.getBooleanExtra("interact", false) + "");
+            if (data != null) {
+                final boolean swipe = data.getBooleanExtra("interact", false);
+                Log.e("onActivityResult", data.getBooleanExtra("interact", false) + "");
 
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    SearchFragment fragment = SearchFragment.getInstance();
-                    fragment.DoSwipe(swipe);
-                }
-            }, 1000);
-
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        SearchFragment fragment = SearchFragment.getInstance();
+                        fragment.DoSwipe(swipe);
+                    }
+                }, 500);
+            }
         }
     }
 }
