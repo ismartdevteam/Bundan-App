@@ -44,10 +44,12 @@
 
             <ismartdev.mn.bundan.util.CircleImageView
                 android:id="@+id/user_image"
-                android:layout_width="150dp"
-                android:layout_height="150dp"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
                 android:layout_centerInParent="true"
-                android:scaleType="centerCrop" />
+                android:scaleType="centerCrop"
+                app:border_color="@android:color/white"
+                app:border_width="2px" />
 
         </pl.bclogic.pulsator4droid.library.PulsatorLayout>
 

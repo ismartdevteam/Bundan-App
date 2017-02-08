@@ -64,6 +64,7 @@ import java.util.Map;
 
 import ismartdev.mn.bundan.models.Image;
 import ismartdev.mn.bundan.models.User;
+import ismartdev.mn.bundan.models.UserAll;
 import ismartdev.mn.bundan.models.UserGender;
 import ismartdev.mn.bundan.models.UserSettings;
 import ismartdev.mn.bundan.util.Constants;
@@ -202,13 +203,8 @@ public class FullscreenActivity extends BaseActivity {
                             JSONObject object,
                             GraphResponse response) {
                         Log.e("data", response.getRawResponse() + "");
-                        try {
-                            addToFirebase(object, getUid());
 
-                        } catch (JSONException e) {
-                            Toast.makeText(FullscreenActivity.this, e.getMessage() + "", Toast.LENGTH_LONG).show();
-                            e.printStackTrace();
-                        }
+                        addToFirebase(object, getUid());
 
 
                     }
@@ -232,18 +228,11 @@ public class FullscreenActivity extends BaseActivity {
                             @Override
                             public void onCompleted(ImageResponse response) {
                                 Bitmap responseImage = response.getBitmap();
-
                                 StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(getString(R.string.storage_path));
-
-
                                 StorageReference userImageRef = storageRef.child("user-photos/" + uid + "/image0.jpg");
-
                                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
                                 if (responseImage == null) {
-
-                                    hideProgressDialog();
-                                    startMainAc();
+                                    callErrorDialog();
                                 } else {
                                     responseImage.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                                     byte[] data = baos.toByteArray();
@@ -252,7 +241,7 @@ public class FullscreenActivity extends BaseActivity {
                                     uploadTask.addOnFailureListener(new OnFailureListener() {
                                         @Override
                                         public void onFailure(@NonNull Exception exception) {
-                                            startMainAc();
+                                            callErrorDialog();
                                         }
                                     }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                                         @Override
@@ -277,74 +266,88 @@ public class FullscreenActivity extends BaseActivity {
     }
 
 
-
-    private void addToFirebase(JSONObject obj, String uid) throws JSONException {
-        if()
-
-
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        User user = new User();
-        Date date = new Date(obj.getString("birthday"));
-        user.birthday = df.format(date);
-        user.education = getSchool(obj.getJSONArray("education"));
-        user.email = obj.getString("email");
-        user.gender = obj.getString("gender");
-        user.fb_id = obj.getString("id");
-        user.name = obj.getString("name");
-        user.work = getWork(obj.getJSONArray("work"));
-//        user.user_friends = obj.getJSONObject("friends") + "";
-//        user.user_likes = obj.getJSONObject("likes") + "";
-        UserGender userGender = new UserGender(uid, user.birthday, user.fb_id, user.name, user.work);
-        Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put(Constants.user + "/" + uid + "/" + Constants.user_info, user.toMap());
-        childUpdates.put(Constants.user + "-" + user.gender + "/" + uid, userGender.toMap());
-
-        ref.updateChildren(childUpdates);
-
-        checkUserSettings(uid, user.gender, date);
-
-        try {
-            uploadImage(uid, user.fb_id, user.gender);
-        } catch (IOException e) {
-            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-            hideProgressDialog();
-        }
-    }
-
-    private void checkUserSettings(final String uid, final String gender, final Date birthday) {
-        ref.child(Constants.user + uid).child(Constants.user_settings).addListenerForSingleValueEvent(new ValueEventListener() {
+    private void addToFirebase(final JSONObject obj, final String uid) {
+        ref.child(Constants.user + uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                UserSettings settings = dataSnapshot.getValue(UserSettings.class);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                if (settings != null) {
-                    editor.putString("gender", settings.gender);
-                    editor.putString("age_range", settings.age_range);
+                UserAll userAll = dataSnapshot.getValue(UserAll.class);
+                if (userAll != null) {
+
+                    checkUserSettings(userAll.user_settings, uid, userAll.user_info.gender, new Date(userAll.user_info.birthday));
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("picture", userAll.user_info.picture.get(0).toString());
                     editor.commit();
+                    startMainAc();
                 } else {
-                    UserSettings userSettings = new UserSettings();
-                    userSettings.gender = gender.equals("male") ? "female" : "male";
-                    int age = Utils.getAge(birthday);
-                    int firstAge = age <= 22 ? 18 : age - 4;
-                    int lastAge = age + 4;
-                    userSettings.age_range = firstAge + "-" + lastAge;
-                    editor.putString("gender", userSettings.gender);
-                    editor.putString("age_range", userSettings.age_range);
-                    editor.commit();
-                    Map<String, Object> childUpdates = new HashMap<>();
-                    childUpdates.put(Constants.user + "/" + uid + "/" + Constants.user_settings, userSettings.toMap());
-                    ref.updateChildren(childUpdates);
+                    try {
+                        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                        User user = new User();
+                        Date date = new Date(obj.getString("birthday"));
+                        user.birthday = df.format(date);
+                        user.education = getSchool(obj.getJSONArray("education"));
+                        user.email = obj.getString("email");
+                        user.gender = obj.getString("gender");
+                        user.fb_id = obj.getString("id");
+                        user.name = obj.getString("name");
+                        user.work = getWork(obj.getJSONArray("work"));
+                        UserGender userGender = new UserGender(uid, user.birthday, user.fb_id, user.name, user.work);
+                        Map<String, Object> childUpdates = new HashMap<>();
+                        childUpdates.put(Constants.user + "/" + uid + "/" + Constants.user_info, user.toMap());
+                        childUpdates.put(Constants.user + "-" + user.gender + "/" + uid, userGender.toMap());
+                        checkUserSettings(null, uid, user.gender, date);
+                        ref.updateChildren(childUpdates);
+                        try {
+                            uploadImage(uid, user.fb_id, user.gender);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            callErrorDialog();
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        callErrorDialog();
+                    }
                 }
-
-
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                callErrorDialog();
             }
         });
+
+
+    }
+
+    private void callErrorDialog() {
+        Toast.makeText(FullscreenActivity.this, R.string.error_do_again, Toast.LENGTH_LONG).show();
+        hideProgressDialog();
+        FirebaseAuth.getInstance().signOut();
+        LoginManager.getInstance().logOut();
+    }
+
+    private void checkUserSettings(UserSettings settings, final String uid, final String gender, final Date birthday) {
+
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        if (settings != null) {
+            editor.putString("gender", settings.gender);
+            editor.putString("age_range", settings.age_range);
+            editor.commit();
+        } else {
+            UserSettings userSettings = new UserSettings();
+            userSettings.gender = gender.equals("male") ? "female" : "male";
+            int age = Utils.getAge(birthday);
+            int firstAge = age <= 22 ? 18 : age - 4;
+            int lastAge = age + 4;
+            userSettings.age_range = firstAge + "-" + lastAge;
+            editor.putString("gender", userSettings.gender);
+            editor.putString("age_range", userSettings.age_range);
+            editor.commit();
+            Map<String, Object> childUpdates = new HashMap<>();
+            childUpdates.put(Constants.user + "/" + uid + "/" + Constants.user_settings, userSettings.toMap());
+            ref.updateChildren(childUpdates);
+        }
+
 
     }
 

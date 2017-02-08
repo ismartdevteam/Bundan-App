@@ -480,13 +480,17 @@ public class UserDeteailActivity extends BaseActivity implements View.OnClickLis
 
         switch (index) {
             case 0:
-                Picasso.with(this).load(url).into(imageOne);
+                Picasso.with(this).load(url)
+                        .placeholder(R.drawable.placeholder)
+                        .into(imageOne);
 
                 imageOneBtn.setImageResource(R.drawable.delete);
 
                 break;
             case 1:
-                Picasso.with(this).load(url).into(imageTwo);
+                Picasso.with(this).load(url)
+                        .placeholder(R.drawable.placeholder)
+                        .into(imageTwo);
 
                 imageTwoBtn.setImageResource(R.drawable.delete);
                 DeleteModel deleteModel = new DeleteModel();
@@ -494,7 +498,9 @@ public class UserDeteailActivity extends BaseActivity implements View.OnClickLis
                 imageTwoBtn.setTag(deleteModel);
                 break;
             case 2:
-                Picasso.with(this).load(url).into(imageThree);
+                Picasso.with(this).load(url)
+                        .placeholder(R.drawable.placeholder)
+                        .into(imageThree);
 
                 imageThreeBtn.setImageResource(R.drawable.delete);
 
@@ -511,7 +517,9 @@ public class UserDeteailActivity extends BaseActivity implements View.OnClickLis
                 imageFourBtn.setTag(deleteModel3);
                 break;
             case 4:
-                Picasso.with(this).load(url).into(imageFive);
+                Picasso.with(this).load(url)
+                        .placeholder(R.drawable.placeholder)
+                        .into(imageFive);
 
                 imageFiveBtn.setImageResource(R.drawable.delete);
                 DeleteModel deleteModel4 = new DeleteModel();
@@ -519,7 +527,9 @@ public class UserDeteailActivity extends BaseActivity implements View.OnClickLis
                 imageFiveBtn.setTag(deleteModel4);
                 break;
             case 5:
-                Picasso.with(this).load(url).into(imageSix);
+                Picasso.with(this).load(url)
+                        .placeholder(R.drawable.placeholder)
+                        .into(imageSix);
                 imageSixBtn.setImageResource(R.drawable.delete);
                 DeleteModel deleteModel5 = new DeleteModel();
                 deleteModel5.index = index;

@@ -98,7 +98,10 @@ public class SearchFragment extends Fragment implements View.OnClickListener, Ti
         sp = getActivity().getSharedPreferences(Constants.sp_search, Context.MODE_PRIVATE);
 
         userImage = (CircleImageView) v.findViewById(R.id.user_image);
-        Picasso.with(getActivity()).load(sp.getString("picture", "")).into(userImage);
+        Picasso.with(getActivity())
+                .load(sp.getString("picture", ""))
+                .placeholder(R.drawable.placeholder)
+                .into(userImage);
         mPulsator = (PulsatorLayout) v.findViewById(R.id.pulsator);
         ImageButton dislike = (ImageButton) v.findViewById(R.id.search_dislike);
         ImageButton like = (ImageButton) v.findViewById(R.id.search_like);
@@ -234,9 +237,10 @@ public class SearchFragment extends Fragment implements View.OnClickListener, Ti
         }
     }
 
-    public void DoSwipe(boolean swipe){
+    public void DoSwipe(boolean swipe) {
         mSwipView.doSwipe(swipe);
     }
+
     @Override
     public void onSwiping() {
 
