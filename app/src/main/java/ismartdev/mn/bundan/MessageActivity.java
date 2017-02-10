@@ -1,5 +1,8 @@
 package ismartdev.mn.bundan;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
@@ -9,12 +12,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ServerValue;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import net.danlew.android.joda.JodaTimeAndroid;
@@ -27,9 +32,17 @@ import org.joda.time.format.PeriodFormatterBuilder;
 import java.util.HashMap;
 import java.util.Map;
 
+import ismartdev.mn.bundan.models.MatchPost;
+import ismartdev.mn.bundan.models.MessagePost;
 import ismartdev.mn.bundan.models.Messages;
+import ismartdev.mn.bundan.models.User;
+import ismartdev.mn.bundan.util.ApiClient;
+import ismartdev.mn.bundan.util.ApiInterface;
 import ismartdev.mn.bundan.util.CircleImageView;
 import ismartdev.mn.bundan.util.Constants;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MessageActivity extends BaseActivity implements View.OnClickListener {
 
@@ -39,36 +52,87 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
     private String match_user_img;
     private String match_uid;
     private LinearLayout lv;
+    private ScrollView scrollView;
     private ActionBar actionBar;
     Bundle b;
     private TextView send;
     private EditText message;
+    private SharedPreferences sharedPreferences;
+    private ApiInterface apiService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_messagedetail_list);
+        sharedPreferences = getSharedPreferences(Constants.sp_app, MODE_PRIVATE);
+        scrollView = (ScrollView) findViewById(R.id.message_scroll);
+
         JodaTimeAndroid.init(this);
         send = (TextView) findViewById(R.id.chat_send);
         message = (EditText) findViewById(R.id.chat_edit);
         b = getIntent().getExtras();
         match_id = b.getString("matchID");
+        sharedPreferences.edit().putString("matchID", match_id).commit();
         match_uid = b.getString("uid");
-        match_name = b.getString("match_name");
-        match_user_img = b.getString("match_user_img");
+
         actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle(match_name);
         lv = (LinearLayout) findViewById(R.id.list);
         send.setOnClickListener(this);
-        ref.child(Constants.user_matches + "/" + match_id + "/messages").addChildEventListener(childEventListener);
+        ref.child(Constants.user + "/" + match_uid + "/" + Constants.user_info).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                User user = dataSnapshot.getValue(User.class);
+                if (user != null) {
+                    match_name = user.name;
+                    match_user_img = user.picture.get(0);
+                    ref.child(Constants.user_matches + "/" + match_id + "/messages").addChildEventListener(childEventListener);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
     }
+
+    private void sendPushNotificationMessage(String uid, final String matchID, String name, String message) {
+        apiService =
+                ApiClient.getClient(Constants.url).create(ApiInterface.class);
+        Call<MessagePost> call = apiService.messagePush(new MessagePost(uid, matchID, message, name));
+        call.enqueue(new Callback<MessagePost>() {
+            @Override
+            public void onResponse(Call<MessagePost> call, Response<MessagePost> response) {
+                if (response.body().getCode() == 200) {
+                    Log.e("Success chat ", response.body().toString());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MessagePost> call, Throwable t) {
+                Log.e("onFailure matchPush ", t.toString());
+            }
+        });
+
+
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         return true;
     }
 
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ref.removeEventListener(childEventListener);
+        sharedPreferences.edit().putString("matchID", "").commit();
+    }
 
     @Override
     public void onBackPressed() {
@@ -106,9 +170,13 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         messages.message = messageStr;
         String newMessagekey = ref.child(Constants.user_matches + "/" + match_id + "/messages").push().getKey();
         Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put(Constants.user_matches + "/" + match_id + "/messages" +"/"+ newMessagekey, messages.toMap());
+        childUpdates.put(Constants.user_matches + "/" + match_id + "/messages" + "/" + newMessagekey, messages.toMap());
         childUpdates.put(Constants.user_matches + "/" + match_id + "/last_message", messages.toMap());
         ref.updateChildren(childUpdates);
+
+        message.setText("");
+
+        sendPushNotificationMessage(match_uid, match_id, match_name, messageStr);
 
     }
 
@@ -120,6 +188,12 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
             if (message != null) {
                 createMessageView(message);
             }
+            scrollView.post(new Runnable() {
+                @Override
+                public void run() {
+                    scrollView.fullScroll(ScrollView.FOCUS_DOWN);
+                }
+            });
         }
 
         @Override

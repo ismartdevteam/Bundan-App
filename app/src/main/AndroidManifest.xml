@@ -81,14 +81,23 @@
             </intent-filter>
         </activity>
         <activity android:name=".UserDeteailActivity" />
-        <activity android:name=".MessageActivity" />
+        <activity
+            android:name=".MessageActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="MessageActivity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".TinderCardDetail"
             android:label="@string/title_activity_tinder_card_detail"
             android:theme="@android:style/Theme.Holo.Light.NoActionBar.Fullscreen"></activity>
 
-        <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
-            android:theme="@style/Base.Theme.AppCompat"/>
+        <activity
+            android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+            android:theme="@style/Base.Theme.AppCompat" />
         <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
     </application>
 

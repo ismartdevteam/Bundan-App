@@ -97,6 +97,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener, Ti
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_home, container, false);
+        changeAppSp();
         sp = getActivity().getSharedPreferences(Constants.sp_search, Context.MODE_PRIVATE);
 
         userImage = (CircleImageView) v.findViewById(R.id.user_image);
@@ -143,7 +144,11 @@ public class SearchFragment extends Fragment implements View.OnClickListener, Ti
         dislike.setEnabled(false);
         like.setEnabled(false);
     }
+    private void changeAppSp() {
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Constants.sp_app, Context.MODE_PRIVATE);
+        sharedPreferences.edit().putString("matchID", "").commit();
 
+    }
 
     public void getListService() {
 

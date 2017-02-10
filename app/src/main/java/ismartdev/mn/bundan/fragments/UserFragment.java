@@ -114,6 +114,8 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_user, container, false);
+        changeAppSp();
+
         image = (CircleImageView) v.findViewById(R.id.user_image);
         editProfile = (ImageView) v.findViewById(R.id.user_edit_btn);
 
@@ -172,6 +174,12 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         });
 
         return v;
+    }
+
+    private void changeAppSp() {
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Constants.sp_app, Context.MODE_PRIVATE);
+        sharedPreferences.edit().putString("matchID", "").commit();
+
     }
 
     private void callDialog() {

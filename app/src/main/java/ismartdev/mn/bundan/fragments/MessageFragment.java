@@ -194,8 +194,6 @@ public class MessageFragment extends Fragment {
                             Bundle b = new Bundle();
                             b.putString("uid", matchedUid);
                             b.putString("matchID", match_id);
-                            b.putString("match_name", info.name);
-                            b.putString("match_user_img", info.picture.get(0));
                             intent.putExtras(b);
                             startActivity(intent);
 
@@ -242,8 +240,6 @@ public class MessageFragment extends Fragment {
                             Bundle b = new Bundle();
                             b.putString("uid", matchedUid);
                             b.putString("matchID", match_id);
-                            b.putString("match_name", info.name);
-                            b.putString("match_user_img", info.picture.get(0));
                             intent.putExtras(b);
                             startActivity(intent);
 

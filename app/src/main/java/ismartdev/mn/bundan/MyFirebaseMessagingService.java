@@ -42,7 +42,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         if (remoteMessage.getNotification() != null) {
             Log.e(TAG, "notification");
             if (data != null) {
-                Log.e(TAG,data.get("matched"));
+                Log.e(TAG, data.get("matched"));
                 Bundle b = new Bundle();
                 if (!TextUtils.isEmpty(data.get("matched"))) {
                     b.putString("matched", remoteMessage.getData().get("matched"));
@@ -52,15 +52,49 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     matchIntent.putExtras(b);
                     matchIntent.setFlags(FLAG_ACTIVITY_NEW_TASK);
                     startActivity(matchIntent);
+                } else if (!TextUtils.isEmpty(data.get("matchID"))) {
+                    String matchID = data.get("matchID");
+                    String uid = data.get("uid");
+                    SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(Constants.sp_app, Context.MODE_PRIVATE);
+                    if (!sharedPreferences.getString("matchID", "").equals(matchID)) {
+                        Bundle messageBundle = new Bundle();
+                        messageBundle.putString("matchID", matchID);
+                        messageBundle.putString("uid", uid);
+                        sendNotificationChat(remoteMessage.getNotification().getTitle(), remoteMessage.getNotification().getTitle(), messageBundle);
+                    }
                 }
 
 
             } else {
-            sendNotification(remoteMessage.getNotification().getTitle(), remoteMessage.getNotification().getTitle());
+                sendNotification(remoteMessage.getNotification().getTitle(), remoteMessage.getNotification().getTitle());
             }
 
         }
 
+    }
+
+    private void sendNotificationChat(String title, String messageBody, Bundle b) {
+        Intent intent = new Intent(this, MessageActivity.class);
+        intent.putExtras(b);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+                PendingIntent.FLAG_ONE_SHOT);
+
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+                .setDefaults(Notification.DEFAULT_SOUND)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle(title)
+                .setContentText(messageBody)
+                .setAutoCancel(true)
+
+                .setVibrate(new long[]{1000, 1000, 1000, 1000, 1000})
+                .setLights(Color.RED, 3000, 3000)
+                .setContentIntent(pendingIntent);
+
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
     }
 
     private void sendNotification(String title, String messageBody) {
