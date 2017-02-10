@@ -1,56 +1,65 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context="ismartdev.mn.bundan.fragments.MessageFragment">
 
-    <EditText
-        android:layout_width="match_parent"
-        android:id="@+id/message_search"
-        android:layout_height="wrap_content"
-        android:hint="@string/search"
-        android:padding="8dp"/>
     <LinearLayout
+        android:id="@+id/new_match_lin"
         android:layout_width="match_parent"
         android:layout_height="150dp"
-        android:id="@+id/new_match_lin"
 
         android:orientation="vertical">
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="8dp"
-            android:textColor="@color/colorPrimary"
             android:text="@string/new_match"
-            />
-        <android.support.v7.widget.RecyclerView
+            android:textColor="@color/tinderPink" />
 
-            android:id="@+id/new_match_List"
+        <HorizontalScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-         />
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/new_match_List"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+            </LinearLayout>
+        </HorizontalScrollView>
 
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="8dp"
-            android:textColor="@color/colorPrimary"
             android:text="@string/messages"
-            />
-        <android.support.v7.widget.RecyclerView
+            android:textColor="@color/tinderPink" />
 
-            android:id="@+id/message_list"
-            app:layoutManager="LinearLayoutManager"
+        <ScrollView
+
+
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            />
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/match_messageList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"></LinearLayout>
+
+        </ScrollView>
 
     </LinearLayout>
 </LinearLayout>

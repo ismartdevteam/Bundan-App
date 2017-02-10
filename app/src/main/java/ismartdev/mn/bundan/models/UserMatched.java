@@ -11,50 +11,32 @@ import java.util.Map;
  * Created by Ulzii on 7/20/2016.
  */
 @IgnoreExtraProperties
-public class UserMatched {
-
-    private boolean isChat=false;
+public class UserMatched  {
 
     private Map<String, String> createDate;
 
-    private long date;
-    private String uid;
+    private String match_id;
 
 
     public UserMatched() {
 
     }
 
-    public UserMatched(boolean isChat, Map<String, String> createDate,String uid) {
-        this.isChat = isChat;
-        this.uid = uid;
+    public UserMatched( Map<String, String> createDate,String match_id) {
+
+        this.match_id = match_id;
         this.createDate = createDate;
     }
 
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
-        result.put("uid", uid);
+        result.put("match_id", match_id);
         result.put("date", createDate);
 
-//        result.put("isChat", isChat);
 
 
         return result;
     }
-    public boolean isChat() {
-        return isChat;
-    }
 
-    public void setChat(boolean chat) {
-        isChat = chat;
-    }
-
-    public long getDate() {
-        return date;
-    }
-
-    public void setDate(long date) {
-        this.date = date;
-    }
 }

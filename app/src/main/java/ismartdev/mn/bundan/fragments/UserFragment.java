@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.CheckedTextView;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -27,7 +26,6 @@ import android.widget.TextView;
 import com.appyvet.rangebar.RangeBar;
 import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.UserInfo;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -35,14 +33,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import ismartdev.mn.bundan.FullscreenActivity;
-import ismartdev.mn.bundan.MainActivity;
 import ismartdev.mn.bundan.R;
 import ismartdev.mn.bundan.UserDeteailActivity;
 import ismartdev.mn.bundan.models.User;
@@ -81,7 +77,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     private SharedPreferences sp;
     private CardView logout;
     private UserAll user;
-    private String genders[] = {"female", "male"};
+    private String genders[] = {"Эмэгтэй", "Эрэгтэй"};
 
     public UserFragment() {
         // Required empty public constructor
@@ -200,9 +196,9 @@ public class UserFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Map<String, Object> childUpdates = new HashMap<>();
-                childUpdates.put(Constants.user + "/" + uid + "/" + Constants.user_settings + "/gender", genders[position]);
+                childUpdates.put(Constants.user + "/" + uid + "/" + Constants.user_settings + "/gender", Constants.getGenderEng(genders[position]));
                 ref.updateChildren(childUpdates);
-                sp.edit().putString("gender", genders[position]).commit();
+                sp.edit().putString("gender", Constants.getGenderEng(genders[position])).commit();
                 dialog.dismiss();
             }
         });
@@ -218,7 +214,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         nameTv.setText(userInfo.name);
         workTv.setText(userInfo.work);
         eduTv.setText(userInfo.education);
-        findGenderTv.setText(userSettings.gender);
+        findGenderTv.setText(Constants.getGenderMN(userSettings.gender));
         final String ages = userSettings.age_range;
         ageRange.setText(ages);
     }

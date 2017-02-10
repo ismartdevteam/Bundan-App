@@ -11,7 +11,7 @@ import java.util.Map;
  * Created by Ulzii on 7/20/2016.
  */
 @IgnoreExtraProperties
-public class UserGender {
+public class UserGender  {
 
 
     private String uid;

@@ -104,8 +104,8 @@ public class UserDeteailActivity extends BaseActivity implements View.OnClickLis
         schoolTv = (TextView) findViewById(R.id.user_school);
         workTv = (TextView) findViewById(R.id.user_work);
 
-        schoolTv.setText(user.education.equals("") ? "None" : user.education);
-        workTv.setText(user.work.equals("") ? "None" : user.work);
+        schoolTv.setText(user.education.equals("") ? "Хоосон" : user.education);
+        workTv.setText(user.work.equals("") ? "Хоосон" : user.work);
 
         schoolTv.setOnClickListener(this);
         workTv.setOnClickListener(this);
@@ -236,23 +236,23 @@ public class UserDeteailActivity extends BaseActivity implements View.OnClickLis
                 v.setTag(null);
                 switch (deleteModel.index) {
                     case 1:
-                        imageTwoBtn.setImageResource(R.drawable.plus);
+                        imageTwoBtn.setImageResource(R.drawable.pic_add);
                         imageTwo.setImageResource(0);
                         break;
                     case 2:
-                        imageThreeBtn.setImageResource(R.drawable.plus);
+                        imageThreeBtn.setImageResource(R.drawable.pic_add);
                         imageThree.setImageResource(0);
                         break;
                     case 3:
-                        imageFourBtn.setImageResource(R.drawable.plus);
+                        imageFourBtn.setImageResource(R.drawable.pic_add);
                         imageFour.setImageResource(0);
                         break;
                     case 4:
-                        imageFiveBtn.setImageResource(R.drawable.plus);
+                        imageFiveBtn.setImageResource(R.drawable.pic_add);
                         imageFive.setImageResource(0);
                         break;
                     case 5:
-                        imageSixBtn.setImageResource(R.drawable.plus);
+                        imageSixBtn.setImageResource(R.drawable.pic_add);
                         imageSix.setImageResource(0);
                         break;
                 }
@@ -390,9 +390,9 @@ public class UserDeteailActivity extends BaseActivity implements View.OnClickLis
                 String updateName = mode == 0 ? "education" : "work";
                 String updateValue = null;
                 if (mode == 0) {
-                    schoolTv.setText("None");
+                    schoolTv.setText("Хоосон");
                 } else {
-                    workTv.setText("None");
+                    workTv.setText("Хоосон");
                 }
                 childUpdates.put(Constants.user + "/" + getUid() + "/" + Constants.user_info + "/" + updateName, updateValue);
                 if (mode == 1)
@@ -484,7 +484,7 @@ public class UserDeteailActivity extends BaseActivity implements View.OnClickLis
                         .placeholder(R.drawable.placeholder)
                         .into(imageOne);
 
-                imageOneBtn.setImageResource(R.drawable.delete);
+                imageOneBtn.setImageResource(R.drawable.pic_delete);
 
                 break;
             case 1:
@@ -492,7 +492,7 @@ public class UserDeteailActivity extends BaseActivity implements View.OnClickLis
                         .placeholder(R.drawable.placeholder)
                         .into(imageTwo);
 
-                imageTwoBtn.setImageResource(R.drawable.delete);
+                imageTwoBtn.setImageResource(R.drawable.pic_delete);
                 DeleteModel deleteModel = new DeleteModel();
                 deleteModel.index = index;
                 imageTwoBtn.setTag(deleteModel);
@@ -502,7 +502,7 @@ public class UserDeteailActivity extends BaseActivity implements View.OnClickLis
                         .placeholder(R.drawable.placeholder)
                         .into(imageThree);
 
-                imageThreeBtn.setImageResource(R.drawable.delete);
+                imageThreeBtn.setImageResource(R.drawable.pic_delete);
 
                 DeleteModel deleteModel2 = new DeleteModel();
                 deleteModel2.index = index;
@@ -511,7 +511,7 @@ public class UserDeteailActivity extends BaseActivity implements View.OnClickLis
             case 3:
                 Picasso.with(this).load(url).into(imageFour);
 
-                imageFourBtn.setImageResource(R.drawable.delete);
+                imageFourBtn.setImageResource(R.drawable.pic_delete);
                 DeleteModel deleteModel3 = new DeleteModel();
                 deleteModel3.index = index;
                 imageFourBtn.setTag(deleteModel3);
@@ -521,7 +521,7 @@ public class UserDeteailActivity extends BaseActivity implements View.OnClickLis
                         .placeholder(R.drawable.placeholder)
                         .into(imageFive);
 
-                imageFiveBtn.setImageResource(R.drawable.delete);
+                imageFiveBtn.setImageResource(R.drawable.pic_delete);
                 DeleteModel deleteModel4 = new DeleteModel();
                 deleteModel4.index = index;
                 imageFiveBtn.setTag(deleteModel4);
@@ -530,7 +530,7 @@ public class UserDeteailActivity extends BaseActivity implements View.OnClickLis
                 Picasso.with(this).load(url)
                         .placeholder(R.drawable.placeholder)
                         .into(imageSix);
-                imageSixBtn.setImageResource(R.drawable.delete);
+                imageSixBtn.setImageResource(R.drawable.pic_delete);
                 DeleteModel deleteModel5 = new DeleteModel();
                 deleteModel5.index = index;
                 imageSixBtn.setTag(deleteModel5);

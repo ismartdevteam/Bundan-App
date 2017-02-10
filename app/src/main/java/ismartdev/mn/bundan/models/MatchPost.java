@@ -12,13 +12,13 @@ public class MatchPost {
     private String uid;
     @SerializedName("code")
     private int code;
-    private String interUid;
+    private String inter_uid;
 
 
-    public MatchPost(String uid, String interUid) {
+    public MatchPost(String uid, String inter_uid) {
 
         this.uid = uid;
-        this.interUid = interUid;
+        this.inter_uid = inter_uid;
     }
 
 

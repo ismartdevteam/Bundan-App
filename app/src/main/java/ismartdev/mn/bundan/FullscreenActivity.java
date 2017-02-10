@@ -1,5 +1,6 @@
 package ismartdev.mn.bundan;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,6 +11,11 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.util.Base64;
 import android.util.Log;
@@ -40,6 +46,8 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -62,6 +70,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ismartdev.mn.bundan.fragments.ImageItemFragment;
+import ismartdev.mn.bundan.fragments.ImageTextFragment;
 import ismartdev.mn.bundan.models.Image;
 import ismartdev.mn.bundan.models.User;
 import ismartdev.mn.bundan.models.UserAll;
@@ -69,15 +79,38 @@ import ismartdev.mn.bundan.models.UserGender;
 import ismartdev.mn.bundan.models.UserSettings;
 import ismartdev.mn.bundan.util.Constants;
 import ismartdev.mn.bundan.util.Utils;
+import me.relex.circleindicator.CircleIndicator;
 
 
-public class FullscreenActivity extends BaseActivity {
+public class FullscreenActivity extends FragmentActivity {
     private static final String TAG = "FullscreenActivity";
     private FirebaseAuth mAuth;
     private static final List<String> PERMISSIONS = Arrays.asList("public_profile", "email", "user_birthday", "user_friends", "user_likes", "user_work_history", "user_education_history");
     private CallbackManager mCallbackManager;
     private Task uploadTask;
     private SharedPreferences sharedPreferences;
+    private String[] titles = {"Заяаны хань зам дээр тосоод зогсож байх нь хаашаа юм..", "Зөвхөн таалагдсан хүнтэйгээ л танилцаарай..", "Зөвхөн таалагдсан хүнтэйгээ л танилцаарай.."};
+    private int[] imageRes = {R.drawable.img1, R.drawable.img2, R.drawable.img3};
+    private ViewPager viewPager;
+    private CircleIndicator indicator;
+    public DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+    private ProgressDialog mProgressDialog;
+
+    public void showProgressDialog() {
+        if (mProgressDialog == null) {
+            mProgressDialog = new ProgressDialog(this);
+            mProgressDialog.setCancelable(false);
+            mProgressDialog.setMessage("Loading...");
+        }
+
+        mProgressDialog.show();
+    }
+
+    public void hideProgressDialog() {
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.dismiss();
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,12 +121,11 @@ public class FullscreenActivity extends BaseActivity {
 
         setContentView(R.layout.activity_fullscreen);
 
+        initWalk();
+
+
         sharedPreferences = getSharedPreferences(Constants.sp_search, Context.MODE_PRIVATE);
         fbHash();
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.hide();
-        }
         showProgressDialog();
         mAuth = FirebaseAuth.getInstance();
         if (mAuth.getCurrentUser() != null) {
@@ -107,6 +139,14 @@ public class FullscreenActivity extends BaseActivity {
 
         }
         hideProgressDialog();
+    }
+
+    private void initWalk() {
+        viewPager = (ViewPager) findViewById(R.id.walk_pager);
+
+        indicator = (CircleIndicator) findViewById(R.id.indicator);
+        viewPager.setAdapter(new ScreenSlidePagerAdapter(getSupportFragmentManager()));
+        indicator.setViewPager(viewPager);
     }
 
     private void fbHash() {
@@ -204,7 +244,7 @@ public class FullscreenActivity extends BaseActivity {
                             GraphResponse response) {
                         Log.e("data", response.getRawResponse() + "");
 
-                        addToFirebase(object, getUid());
+                        addToFirebase(object, FirebaseAuth.getInstance().getCurrentUser().getUid());
 
 
                     }
@@ -383,6 +423,28 @@ public class FullscreenActivity extends BaseActivity {
             }
         }
         return "";
+    }
+
+    private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
+
+
+        public ScreenSlidePagerAdapter(FragmentManager fm) {
+            super(fm);
+
+
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return ImageTextFragment.newInstance(titles[position], imageRes[position]);
+        }
+
+        @Override
+        public int getCount() {
+            return 3;
+        }
+
+
     }
 
 }

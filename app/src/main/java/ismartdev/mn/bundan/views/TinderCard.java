@@ -30,6 +30,7 @@ import com.mindorks.placeholderview.annotations.swipe.SwipeOut;
 import com.mindorks.placeholderview.annotations.swipe.SwipeOutState;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,6 +40,7 @@ import ismartdev.mn.bundan.TinderCardDetail;
 import ismartdev.mn.bundan.models.AgeRanges;
 import ismartdev.mn.bundan.models.InteractModel;
 import ismartdev.mn.bundan.models.MatchPost;
+import ismartdev.mn.bundan.models.MatchedModel;
 import ismartdev.mn.bundan.models.UserGender;
 import ismartdev.mn.bundan.models.UserMatched;
 import ismartdev.mn.bundan.util.ApiClient;
@@ -104,6 +106,7 @@ public class TinderCard {
     private void onSwipedOut() {
 
         interactUser(userGender, false,uid,context);
+        Log.e("interactUser","dislike");
         callback.onSwipingEnd();
     }
 
@@ -116,6 +119,7 @@ public class TinderCard {
     private void onSwipeIn() {
 
         interactUser(userGender, true,uid,context);
+        Log.e("interactUser","like");
         callback.onSwipingEnd();
     }
 
@@ -143,13 +147,19 @@ public class TinderCard {
                     if (dataSnapshot.getValue() != null) {
                         DatabaseReference newRef=FirebaseDatabase.getInstance().getReference();
                         String newMatchkey = newRef.child(Constants.user_matches).push().getKey();
-                        UserMatched userMatchedMe = new UserMatched(false, ServerValue.TIMESTAMP, uid);
-                        UserMatched userMatchedInter = new UserMatched(false, ServerValue.TIMESTAMP, interUser.getUid());
+                        MatchedModel matchedModel=new MatchedModel();
+                        matchedModel.createDate=ServerValue.TIMESTAMP;
+                        matchedModel.uids=new ArrayList<String>();
+                        matchedModel.uids.add(uid);
+                        matchedModel.uids.add(interUser.getUid());
+
+
+                        UserMatched userMatched = new UserMatched( ServerValue.TIMESTAMP, newMatchkey);
                         Map<String, Object> childUpdates = new HashMap<>();
-                        childUpdates.put(Constants.user+"/"+uid + "/" + Constants.matches + newMatchkey, userMatchedInter.toMap());
-                        childUpdates.put(Constants.user+"/"+interUser.getUid() + "/" + Constants.matches + newMatchkey, userMatchedMe.toMap());
+                        childUpdates.put(Constants.user+"/"+uid + "/" + Constants.matches + interUser.getUid() , userMatched.toMap());
+                        childUpdates.put(Constants.user+"/"+interUser.getUid() + "/" + Constants.matches + uid, userMatched.toMap());
+                        childUpdates.put(Constants.user_matches+"/"+newMatchkey , matchedModel.toMap());
                         newRef.updateChildren(childUpdates);
-                        Log.e("match picker", Constants.user + Constants.getInteractName(true) + interUser.getUid() + "/" + uid);
                         sendPushNotificationMatch(context,uid,interUser.getUid(), interUser.getName(), interUser.getPicture());
                     }
 

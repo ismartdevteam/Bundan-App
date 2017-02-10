@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -61,6 +62,8 @@ public class SearchFragment extends Fragment implements View.OnClickListener, Ti
     private SwipePlaceHolderView mSwipView;
     private PulsatorLayout mPulsator;
     private CircleImageView userImage;
+    private ImageButton dislike;
+    private ImageButton like;
 
     public SearchFragment() {
     }
@@ -93,7 +96,6 @@ public class SearchFragment extends Fragment implements View.OnClickListener, Ti
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_home, container, false);
         sp = getActivity().getSharedPreferences(Constants.sp_search, Context.MODE_PRIVATE);
 
@@ -103,8 +105,8 @@ public class SearchFragment extends Fragment implements View.OnClickListener, Ti
                 .placeholder(R.drawable.placeholder)
                 .into(userImage);
         mPulsator = (PulsatorLayout) v.findViewById(R.id.pulsator);
-        ImageButton dislike = (ImageButton) v.findViewById(R.id.search_dislike);
-        ImageButton like = (ImageButton) v.findViewById(R.id.search_like);
+        dislike = (ImageButton) v.findViewById(R.id.search_dislike);
+        like = (ImageButton) v.findViewById(R.id.search_like);
         dislike.setOnClickListener(this);
         like.setOnClickListener(this);
         mSwipView = (SwipePlaceHolderView) v.findViewById(R.id.swipeView);
@@ -123,12 +125,10 @@ public class SearchFragment extends Fragment implements View.OnClickListener, Ti
         });
         mSwipView.getBuilder()
                 .setDisplayViewCount(3)
-                .setSwipeType(SwipePlaceHolderView.SWIPE_TYPE_HORIZONTAL)
 
                 .setSwipeDecor(new SwipeDecor()
                         .setPaddingTop(20)
-                        .setSwipeRotationAngle(45)
-
+                        .setRelativeScale(0.01f)
                         .setSwipeInMsgLayoutId(R.layout.tinder_swipe_in_msg_view)
                         .setSwipeOutMsgLayoutId(R.layout.tinder_swipe_out_msg_view));
         getListService();
@@ -138,16 +138,12 @@ public class SearchFragment extends Fragment implements View.OnClickListener, Ti
     private void makePulsar() {
         if (mSwipView.getChildCount() > 0)
             mSwipView.removeAllViews();
-        mPulsator.setCount(4);
         mPulsator.start();
         changeStateViewpager(true);
+        dislike.setEnabled(false);
+        like.setEnabled(false);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-
-    }
 
     public void getListService() {
 
@@ -170,6 +166,8 @@ public class SearchFragment extends Fragment implements View.OnClickListener, Ti
                     if (searchList.size() > 0) {
                         stopPulsar();
                         makeTinderList(searchList);
+                    } else {
+                        handler.postDelayed(runnable, 5000);
                     }
 
 
@@ -185,8 +183,27 @@ public class SearchFragment extends Fragment implements View.OnClickListener, Ti
 
     }
 
+    public Handler handler = new Handler();
+    public Runnable runnable = new Runnable() {
+        public void run() {
+            Log.e("runnable", "yes");
+            getListService();
+        }
+    };
+
+    @Override
+    public void setUserVisibleHint(boolean visible) {
+        super.setUserVisibleHint(visible);
+        if (!visible || !isResumed()) {
+            handler.removeCallbacks(runnable);
+        }
+    }
+
     private void stopPulsar() {
         mPulsator.stop();
+
+        dislike.setEnabled(true);
+        like.setEnabled(true);
         changeStateViewpager(false);
     }
 

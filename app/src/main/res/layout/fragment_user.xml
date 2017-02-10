@@ -3,8 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
-
     tools:context="ismartdev.mn.bundan.fragments.UserFragment">
 
     <LinearLayout
@@ -24,8 +22,8 @@
 
                 <ismartdev.mn.bundan.util.CircleImageView
                     android:id="@+id/user_image"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
+                    android:layout_width="130dp"
+                    android:layout_height="130dp"
                     android:layout_centerInParent="true"
                     android:scaleType="centerCrop" />
 
@@ -34,10 +32,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignEnd="@+id/user_image"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginBottom="10dp"
                     android:layout_alignParentBottom="true"
                     android:layout_alignRight="@+id/user_image"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginRight="10dp"
                     android:enabled="false"
                     android:src="@drawable/edit_btn" />
 
@@ -89,8 +87,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
-                    android:paddingBottom="10dp"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:paddingBottom="10dp">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -159,6 +157,9 @@
                     android:layout_height="72dp"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
+                    app:connectingLineColor="@color/tinderPink"
+                    app:pinColor="@color/tinderPink"
+                    app:selectorColor="@color/tinderPink"
                     app:tickEnd="50"
                     app:tickInterval="1"
                     app:tickStart="18" />
@@ -179,7 +180,7 @@
                 android:gravity="center"
                 android:padding="10dp"
                 android:text="@string/logout"
-                android:textColor="@color/colorPrimary" />
+                android:textColor="@color/tinderPink" />
         </android.support.v7.widget.CardView>
     </LinearLayout>
 </ScrollView>

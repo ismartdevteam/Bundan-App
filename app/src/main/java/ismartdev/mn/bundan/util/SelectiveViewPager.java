@@ -3,6 +3,7 @@ package ismartdev.mn.bundan.util;
 import android.content.Context;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 
 /**
@@ -16,19 +17,22 @@ public class SelectiveViewPager extends ViewPager {
         super(context);
     }
 
-    public SelectiveViewPager(Context context, AttributeSet attributeSet){
+    public SelectiveViewPager(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
     }
 
     @Override
-    public boolean onInterceptTouchEvent(MotionEvent e) {
-        if (paging) {
-            return super.onInterceptTouchEvent(e);
-        }
-
-        return false;
+    public boolean onTouchEvent(MotionEvent event) {
+        return this.paging && super.onTouchEvent(event);
     }
 
-    public void setPaging(boolean p){ paging = p; }
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent event) {
+        return this.paging && super.onInterceptTouchEvent(event);
+    }
+
+    public void setPaging(boolean p) {
+        paging = p;
+    }
 
 }

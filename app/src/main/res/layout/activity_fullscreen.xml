@@ -1,4 +1,5 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -13,18 +14,43 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <android.support.v4.view.ViewPager
+                android:id="@+id/walk_pager"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/button_facebook_login"
+                android:background="@android:color/white" />
+
+            <me.relex.circleindicator.CircleIndicator
+                android:id="@+id/indicator"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_alignBottom="@id/walk_pager"
+                app:ci_drawable="@drawable/gray_radius"
+                app:ci_drawable_unselected="@drawable/black_radius" />
+
             <Button
                 android:id="@+id/button_facebook_login"
-                android:text="@string/login_fb"
-                style="@style/com_facebook_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/walk_faq"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="15dp"
+                android:textColor="@android:color/white"
+                android:background="@drawable/gradient_round_blu"
+                android:onClick="loginFb"
+                android:text="@string/login_fb" />
+
+            <TextView
+                android:id="@+id/walk_faq"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:layout_gravity="center_horizontal"
-                android:onClick="loginFb"
-                android:layout_marginBottom="45dp"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp" />
+                android:textColor="@color/black_overlay"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="@string/faq"
+                android:textSize="12sp" />
         </RelativeLayout>
 
     </FrameLayout>

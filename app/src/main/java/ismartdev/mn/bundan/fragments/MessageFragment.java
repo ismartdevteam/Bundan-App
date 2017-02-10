@@ -1,6 +1,7 @@
 package ismartdev.mn.bundan.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,7 +11,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import com.google.firebase.auth.UserInfo;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -18,8 +23,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import java.util.HashMap;
+
+import ismartdev.mn.bundan.MessageActivity;
 import ismartdev.mn.bundan.R;
+import ismartdev.mn.bundan.models.MatchedModel;
+import ismartdev.mn.bundan.models.User;
 import ismartdev.mn.bundan.models.UserMatched;
+import ismartdev.mn.bundan.models.UserMatches;
 import ismartdev.mn.bundan.util.CircleImageView;
 import ismartdev.mn.bundan.util.Constants;
 import ismartdev.mn.bundan.util.FirebaseRecyclerAdapter;
@@ -37,6 +48,7 @@ public class MessageFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     private static final String UID = "uid";
     private static final String ARG_PARAM2 = "param2";
+    private static final String TAG = "";
 
     // TODO: Rename and change types of parameters
     private String uid;
@@ -44,7 +56,8 @@ public class MessageFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
     private DatabaseReference ref;
-    private FirebaseRecyclerAdapter<UserMatched, MatchViewHolder> matchAdapter;
+    private LinearLayout matchesLin;
+    private LinearLayout messagesLin;
 
     public MessageFragment() {
         // Required empty public constructor
@@ -82,41 +95,112 @@ public class MessageFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_matches, container, false);
         ref = FirebaseDatabase.getInstance().getReference();
-        // Inflate the layout for this fragment
-        createNewMatchView(v);
+        matchesLin = (LinearLayout) v.findViewById(R.id.new_match_List);
+        messagesLin = (LinearLayout) v.findViewById(R.id.match_messageList);
+
         return v;
     }
 
-    private void createNewMatchView(View v) {
+    private void getMatches() {
+        matchesLin.removeAllViews();
 
-
-
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
-        RecyclerView mRecyclerView = (RecyclerView) v.findViewById(R.id.new_match_List);
-        mRecyclerView.setLayoutManager(layoutManager);
-
-        matchAdapter = new FirebaseRecyclerAdapter<UserMatched, MatchViewHolder>(UserMatched.class, R.layout.match_item, MatchViewHolder.class,
-                ref.child(Constants.matches +uid).orderByChild("ischat").startAt("no").getRef()) {
-            @Override
-            protected void populateViewHolder(final MatchViewHolder viewHolder, final UserMatched userMatched, int position, String key) {
-                Log.e("usermatche",userMatched.getDate()+"--");
-                makeMatchItem(viewHolder.userImage, key);
-
-            }
-        };
-        mRecyclerView.setAdapter(matchAdapter);
-
-
+        ref.child(Constants.user + "/" + uid + "/" + Constants.matches).addChildEventListener(childEventListener);
     }
 
-    private void makeMatchItem(final CircleImageView circleImageView, String key) {
+    ChildEventListener childEventListener = new ChildEventListener() {
+        @Override
+        public void onChildAdded(final DataSnapshot dataSnapshot, String previousChildName) {
+            Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
 
-        ref.child(Constants.user + "/" + key + "/picture").addListenerForSingleValueEvent(new ValueEventListener() {
+            final UserMatches matches = dataSnapshot.getValue(UserMatches.class);
+            Log.d(TAG, "UserMatches:" + matches.match_id);
+            FirebaseDatabase.getInstance().getReference().child(Constants.user_matches + "/" + matches.match_id).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snap) {
+                    Log.d(TAG, "onDataChange:" + snap.getValue().toString());
+                    MatchedModel matchedModel = snap.getValue(MatchedModel.class);
+                    if (matchedModel != null) {
+                        if (matchedModel.last_message == null) {
+                            createNewMatchView(dataSnapshot.getKey(), matches.match_id);
+                        } else {
+                            createNewMessageView(dataSnapshot.getKey(), matchedModel,matches.match_id);
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
+            Log.d(TAG, "onChildChanged:" + dataSnapshot.getKey());
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+            Log.d(TAG, "onChildRemoved:" + dataSnapshot.getKey());
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
+            Log.d(TAG, "onChildMoved:" + dataSnapshot.getKey());
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+            Log.w(TAG, "postComments:onCancelled", databaseError.toException());
+        }
+    };
+
+    @Override
+    public void setUserVisibleHint(boolean visible) {
+        super.setUserVisibleHint(visible);
+        if (visible && isResumed()) {
+            onResume();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (!getUserVisibleHint())
+            return;
+        getMatches();
+    }
+
+    private void createNewMatchView(final String matchedUid, final String match_id) {
+
+
+        final View view = getActivity().getLayoutInflater().inflate(R.layout.match_item, null);
+        final CircleImageView imageView = (CircleImageView) view.findViewById(R.id.match_image);
+        final TextView name = (TextView) view.findViewById(R.id.match_name);
+        FirebaseDatabase.getInstance().getReference().child(Constants.user + "/" + matchedUid + "/" + Constants.user_info).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.getValue() != null) {
+                final User info = dataSnapshot.getValue(User.class);
+                if (info != null) {
+                    Picasso.with(getActivity()).load(info.picture.get(0))
+                            .placeholder(R.drawable.placeholder)
+                            .into(imageView);
+                    name.setText(info.name);
+                    view.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent = new Intent(getActivity(), MessageActivity.class);
+                            Bundle b = new Bundle();
+                            b.putString("uid", matchedUid);
+                            b.putString("matchID", match_id);
+                            b.putString("match_name", info.name);
+                            b.putString("match_user_img", info.picture.get(0));
+                            intent.putExtras(b);
+                            startActivity(intent);
 
-                    Picasso.with(getActivity()).load(dataSnapshot.getValue().toString()).into(circleImageView);
+                        }
+                    });
                 }
             }
 
@@ -125,6 +209,58 @@ public class MessageFragment extends Fragment {
 
             }
         });
+
+
+        matchesLin.addView(view);
+
+
+    }
+
+
+    private void createNewMessageView(final String matchedUid, final MatchedModel model,final String match_id) {
+
+
+        final View view = getActivity().getLayoutInflater().inflate(R.layout.match_message_item, null);
+        final CircleImageView imageView = (CircleImageView) view.findViewById(R.id.match_image);
+        final TextView name = (TextView) view.findViewById(R.id.match_name);
+        final TextView lastmessage = (TextView) view.findViewById(R.id.match_last_sms);
+
+        FirebaseDatabase.getInstance().getReference().child(Constants.user + "/" + matchedUid + "/" + Constants.user_info).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                final User info = dataSnapshot.getValue(User.class);
+                if (info != null) {
+                    Picasso.with(getActivity()).load(info.picture.get(0))
+                            .placeholder(R.drawable.placeholder)
+                            .into(imageView);
+                    name.setText(info.name);
+                    lastmessage.setText(model.last_message.message);
+                    view.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent = new Intent(getActivity(), MessageActivity.class);
+                            Bundle b = new Bundle();
+                            b.putString("uid", matchedUid);
+                            b.putString("matchID", match_id);
+                            b.putString("match_name", info.name);
+                            b.putString("match_user_img", info.picture.get(0));
+                            intent.putExtras(b);
+                            startActivity(intent);
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+        messagesLin.addView(view);
+
 
     }
 
@@ -152,23 +288,14 @@ public class MessageFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
-        matchAdapter.cleanup();
+        ref.removeEventListener(childEventListener);
     }
 }

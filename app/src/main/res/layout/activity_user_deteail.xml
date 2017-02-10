@@ -42,7 +42,7 @@
                         android:layout_alignBottom="@+id/user_imagef"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
-                        android:src="@drawable/plus" />
+                        android:src="@drawable/pic_add" />
                 </RelativeLayout>
 
                 <LinearLayout
@@ -71,7 +71,7 @@
                             android:layout_alignBottom="@+id/user_imagesix"
                             android:layout_alignEnd="@+id/user_imagesix"
                             android:layout_alignRight="@+id/user_imagesix"
-                            android:src="@drawable/plus" />
+                            android:src="@drawable/pic_add" />
                     </RelativeLayout>
 
                     <RelativeLayout
@@ -95,7 +95,7 @@
                             android:layout_alignBottom="@+id/user_imagefive"
                             android:layout_alignEnd="@+id/user_imagefive"
                             android:layout_alignRight="@+id/user_imagefive"
-                            android:src="@drawable/plus" />
+                            android:src="@drawable/pic_add" />
                     </RelativeLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -130,7 +130,7 @@
                         android:layout_alignBottom="@+id/user_imagetwo"
                         android:layout_alignEnd="@+id/user_imagetwo"
                         android:layout_alignRight="@+id/user_imagetwo"
-                        android:src="@drawable/plus" />
+                        android:src="@drawable/pic_add" />
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -152,7 +152,7 @@
                         android:layout_alignBottom="@+id/user_imagethree"
                         android:layout_alignEnd="@+id/user_imagethree"
                         android:layout_alignRight="@+id/user_imagethree"
-                        android:src="@drawable/plus" />
+                        android:src="@drawable/pic_add" />
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -175,7 +175,7 @@
                         android:layout_alignBottom="@+id/user_imagefour"
                         android:layout_alignEnd="@+id/user_imagefour"
                         android:layout_alignRight="@+id/user_imagefour"
-                        android:src="@drawable/plus" />
+                        android:src="@drawable/pic_add" />
                 </RelativeLayout>
             </LinearLayout>
 
@@ -186,7 +186,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="18dp"
-            android:text="Current work" />
+            android:text="@string/work" />
 
         <TextView
             android:id="@+id/user_work"
@@ -199,7 +199,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="18dp"
-            android:text="School" />
+            android:text="@string/education" />
 
         <TextView
             android:id="@+id/user_school"

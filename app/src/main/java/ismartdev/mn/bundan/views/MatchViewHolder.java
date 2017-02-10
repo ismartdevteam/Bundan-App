@@ -21,9 +21,6 @@ public class MatchViewHolder extends RecyclerView.ViewHolder {
         userImage = (CircleImageView) itemView.findViewById(R.id.match_image);
 
 
-//        likeButton=(LikeView) itemView.findViewById(R.id.place_like_btn);
-//        shareButton=(ShareButton) itemView.findViewById(R.id.place_share_btn);
-
 
     }
 

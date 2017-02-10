@@ -25,5 +25,19 @@ public class Constants {
             return "-dislikes/";
 
     }
+    public static String getGenderEng(String gender) {
+        if (gender.equals("Эмэгтэй"))
+            return "female";
+        else
+            return "male";
+
+    }
+    public static String getGenderMN(String gender) {
+        if (gender.equals("female"))
+            return "Эмэгтэй";
+        else
+            return "Эрэгтэй";
+
+    }
 
 }

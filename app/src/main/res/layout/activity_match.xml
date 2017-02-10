@@ -25,12 +25,10 @@
             android:padding="18dp"
             tools:ignore="UselessParent">
 
-            <TextView
+            <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/itsmatch"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@android:color/white" />
+                android:src="@drawable/match_header"/>
 
             <TextView
                 android:id="@+id/match_name"

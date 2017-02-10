@@ -1,8 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ismartdev.mn.bundan.util.CircleImageView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/match_image"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:scaleType="centerCrop">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 
-</ismartdev.mn.bundan.util.CircleImageView>
+    android:layout_width="100dp"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:orientation="vertical">
+
+    <ismartdev.mn.bundan.util.CircleImageView
+        android:id="@+id/match_image"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:scaleType="centerCrop" />
+
+    <TextView
+        android:id="@+id/match_name"
+        android:layout_width="match_parent"
+        android:gravity="center"
+        android:layout_height="wrap_content" />
+</LinearLayout>
