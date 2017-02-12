@@ -12,7 +12,9 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 
@@ -26,7 +28,7 @@ import ismartdev.mn.bundan.util.Constants;
 import ismartdev.mn.bundan.util.SelectiveViewPager;
 
 
-public class MainActivity extends BaseActivity implements SearchFragment.OnFragmentInteractionListener, MessageFragment.OnFragmentInteractionListener, UserFragment.OnFragmentInteractionListener {
+public class MainActivity extends BaseActivityNoApp implements View.OnClickListener,SearchFragment.OnFragmentInteractionListener, MessageFragment.OnFragmentInteractionListener, UserFragment.OnFragmentInteractionListener {
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
     public static final int CARD_REQ = 1000;
@@ -35,7 +37,9 @@ public class MainActivity extends BaseActivity implements SearchFragment.OnFragm
     private SharedPreferences sharedPreferences;
     private String url = "";
     public static boolean isSearchAgain = false;
-
+    private ImageButton user_menu;
+    private ImageButton search_menu;
+    private ImageButton chat_menu;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +48,12 @@ public class MainActivity extends BaseActivity implements SearchFragment.OnFragm
         if (sharedPreferences.getString(Constants.fcm, "").equals(""))
             checkFcm(sharedPreferences);
 
+        user_menu =(ImageButton)findViewById(R.id.user_menu);
+        search_menu =(ImageButton)findViewById(R.id.search_menu);
+        chat_menu =(ImageButton)findViewById(R.id.chat_menu);
+        user_menu.setOnClickListener(this);
+        search_menu.setOnClickListener(this);
+        chat_menu.setOnClickListener(this);
 
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
@@ -51,7 +61,7 @@ public class MainActivity extends BaseActivity implements SearchFragment.OnFragm
 
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.setOffscreenPageLimit(3);
-        mViewPager.setCurrentItem(1);
+
 
 
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -62,6 +72,7 @@ public class MainActivity extends BaseActivity implements SearchFragment.OnFragm
 
             @Override
             public void onPageSelected(int position) {
+                changeMenu(position);
                 if (position == 1) {
                     if (isSearchAgain) {
 
@@ -79,6 +90,7 @@ public class MainActivity extends BaseActivity implements SearchFragment.OnFragm
 
             }
         });
+        mViewPager.setCurrentItem(1);
     }
 
     private void checkFcm(SharedPreferences sp) {
@@ -110,6 +122,41 @@ public class MainActivity extends BaseActivity implements SearchFragment.OnFragm
 
         isSearchAgain = changed;
 
+    }
+
+    private void changeMenu(int pos){
+        switch (pos){
+            case 0:
+                user_menu.setSelected(true);
+                chat_menu.setSelected(false);
+                search_menu.setSelected(false);
+                break;
+            case 1:
+                user_menu.setSelected(false);
+                chat_menu.setSelected(false);
+                search_menu.setSelected(true);
+                break;
+            case 2:
+                user_menu.setSelected(false);
+                chat_menu.setSelected(true);
+                search_menu.setSelected(false);
+                break;
+        }
+    }
+    @Override
+    public void onClick(View v) {
+        if(v==user_menu)
+        {
+            mViewPager.setCurrentItem(0);
+        }
+        if(v==search_menu)
+        {
+            mViewPager.setCurrentItem(1);
+        }
+        if(v==chat_menu)
+        {
+            mViewPager.setCurrentItem(2);
+        }
     }
 
     public class SectionsPagerAdapter extends FragmentStatePagerAdapter {

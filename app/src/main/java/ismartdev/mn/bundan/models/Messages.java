@@ -11,7 +11,7 @@ import java.util.Map;
  * Created by Ulzii on 7/20/2016.
  */
 @IgnoreExtraProperties
-public class Messages {
+public class Messages  {
 
 
     public long date;

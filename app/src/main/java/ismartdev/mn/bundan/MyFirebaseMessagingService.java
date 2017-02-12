@@ -13,6 +13,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -42,7 +43,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         if (remoteMessage.getNotification() != null) {
             Log.e(TAG, "notification");
             if (data != null) {
-
                 Bundle b = new Bundle();
                 if (!TextUtils.isEmpty(data.get("matched"))) {
                     b.putString("matched", remoteMessage.getData().get("matched"));
@@ -60,7 +60,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         Bundle messageBundle = new Bundle();
                         messageBundle.putString("matchID", matchID);
                         messageBundle.putString("uid", uid);
-                        sendNotificationChat(remoteMessage.getNotification().getTitle(), remoteMessage.getNotification().getTitle(), messageBundle);
+                        sendNotificationChat(Integer.parseInt(uid.replaceAll("[\\D]", "")), remoteMessage.getNotification().getTitle(), remoteMessage.getNotification().getTitle(), messageBundle);
                     }
                 }
 
@@ -73,11 +73,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     }
 
-    private void sendNotificationChat(String title, String messageBody, Bundle b) {
+    private void sendNotificationChat(int notiId, String title, String messageBody, Bundle b) {
         Intent intent = new Intent(this, MessageActivity.class);
         intent.putExtras(b);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
@@ -91,10 +91,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setLights(Color.RED, 3000, 3000)
                 .setContentIntent(pendingIntent);
 
-        NotificationManager notificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManagerCompat notificationManager =
+                NotificationManagerCompat.from(this);
 
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        notificationManager.notify(notiId, notificationBuilder.build());
     }
 
     private void sendNotification(String title, String messageBody) {

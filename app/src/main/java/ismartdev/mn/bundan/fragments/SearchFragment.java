@@ -144,6 +144,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener, Ti
         dislike.setEnabled(false);
         like.setEnabled(false);
     }
+
     private void changeAppSp() {
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Constants.sp_app, Context.MODE_PRIVATE);
         sharedPreferences.edit().putString("matchID", "").commit();
@@ -199,9 +200,18 @@ public class SearchFragment extends Fragment implements View.OnClickListener, Ti
     @Override
     public void setUserVisibleHint(boolean visible) {
         super.setUserVisibleHint(visible);
-        if (!visible || !isResumed()) {
+        Log.e("runnable visible", visible + "-- is resume:" + isResumed());
+        if (!visible) {
+            Log.e("runnable", "false");
             handler.removeCallbacks(runnable);
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.e("runnable", "onPause");
+        handler.removeCallbacks(runnable);
     }
 
     private void stopPulsar() {

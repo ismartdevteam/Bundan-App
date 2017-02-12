@@ -30,7 +30,7 @@ import ismartdev.mn.bundan.util.Constants;
 import ismartdev.mn.bundan.views.PullToZoomScrollViewEx;
 import me.relex.circleindicator.CircleIndicator;
 
-public class TinderCardDetail extends FragmentActivity implements View.OnClickListener {
+public class TinderCardDetail extends BaseActivityNoApp implements View.OnClickListener {
     private Bundle b;
     private TextView nameAndAge;
     private TextView education;
@@ -39,7 +39,6 @@ public class TinderCardDetail extends FragmentActivity implements View.OnClickLi
     private PullToZoomScrollViewEx scrollView;
     private ViewPager viewPager;
     private CircleIndicator indicator;
-    private DatabaseReference ref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

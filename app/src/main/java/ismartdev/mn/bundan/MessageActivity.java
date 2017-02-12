@@ -1,11 +1,11 @@
 package ismartdev.mn.bundan;
 
-import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -22,17 +23,12 @@ import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
-import net.danlew.android.joda.JodaTimeAndroid;
-
-import org.joda.time.DateTime;
-import org.joda.time.Period;
-import org.joda.time.format.PeriodFormatter;
-import org.joda.time.format.PeriodFormatterBuilder;
-
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import ismartdev.mn.bundan.models.MatchPost;
 import ismartdev.mn.bundan.models.MessagePost;
 import ismartdev.mn.bundan.models.Messages;
 import ismartdev.mn.bundan.models.User;
@@ -54,20 +50,23 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
     private LinearLayout lv;
     private ScrollView scrollView;
     private ActionBar actionBar;
-    Bundle b;
+    private Bundle b;
     private TextView send;
     private EditText message;
     private SharedPreferences sharedPreferences;
+    private SharedPreferences userPreferences;
     private ApiInterface apiService;
+    private String name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_messagedetail_list);
         sharedPreferences = getSharedPreferences(Constants.sp_app, MODE_PRIVATE);
+        userPreferences = getSharedPreferences(Constants.sp_search, MODE_PRIVATE);
+        name = userPreferences.getString("name", "");
         scrollView = (ScrollView) findViewById(R.id.message_scroll);
 
-        JodaTimeAndroid.init(this);
         send = (TextView) findViewById(R.id.chat_send);
         message = (EditText) findViewById(R.id.chat_edit);
         b = getIntent().getExtras();
@@ -77,16 +76,20 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
 
         actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle(match_name);
+
         lv = (LinearLayout) findViewById(R.id.list);
         send.setOnClickListener(this);
         ref.child(Constants.user + "/" + match_uid + "/" + Constants.user_info).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
+
                 if (user != null) {
                     match_name = user.name;
+
+                    actionBar.setTitle(match_name);
                     match_user_img = user.picture.get(0);
+                    createHeader(match_name, match_user_img);
                     ref.child(Constants.user_matches + "/" + match_id + "/messages").addChildEventListener(childEventListener);
                 }
             }
@@ -96,7 +99,8 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
 
             }
         });
-
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
     }
 
     private void sendPushNotificationMessage(String uid, final String matchID, String name, String message) {
@@ -176,7 +180,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
 
         message.setText("");
 
-        sendPushNotificationMessage(match_uid, match_id, match_name, messageStr);
+        sendPushNotificationMessage(match_uid, match_id, name, messageStr);
 
     }
 
@@ -187,13 +191,9 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
             Messages message = dataSnapshot.getValue(Messages.class);
             if (message != null) {
                 createMessageView(message);
+                scrollDown();
             }
-            scrollView.post(new Runnable() {
-                @Override
-                public void run() {
-                    scrollView.fullScroll(ScrollView.FOCUS_DOWN);
-                }
-            });
+
         }
 
         @Override
@@ -217,6 +217,15 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         }
     };
 
+    private void scrollDown() {
+        scrollView.post(new Runnable() {
+            @Override
+            public void run() {
+                scrollView.fullScroll(ScrollView.FOCUS_DOWN);
+            }
+        });
+    }
+
 
     private void createMessageView(Messages message) {
         View view = null;
@@ -232,28 +241,42 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         TextView text = (TextView) view.findViewById(R.id.message_text);
         text.setText(message.message);
         TextView date = (TextView) view.findViewById(R.id.message_date);
-        date.setText(getAgoDate(message.date));
+        String relativeDate = DateUtils.getRelativeTimeSpanString(message.date) + "";
+        Log.e("createMessageView: ", message.date + " ");
+        if (relativeDate.equals("0 minutes ago"))
+            relativeDate = "Just now";
+        date.setText(relativeDate);
         lv.addView(view);
     }
 
-    private String getAgoDate(long date) {
-        DateTime myBirthDate = new DateTime(date);
-        DateTime now = new DateTime();
-        Period period = new Period(myBirthDate, now);
+    private void createHeader(final String name, final String url) {
+        ref.child(Constants.user + "/" + getUid() + "/" + Constants.user_info + "/matches/" + match_uid + "/date").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                long dataLong = (long) dataSnapshot.getValue();
+                Date date = new Date(dataLong);
+                DateFormat df = new SimpleDateFormat("yyyy/MM/dd");
 
-        PeriodFormatter formatter = new PeriodFormatterBuilder()
-                .appendSeconds().appendSuffix(" seconds ago\n")
-                .appendMinutes().appendSuffix(" minutes ago\n")
-                .appendHours().appendSuffix(" hours ago\n")
-                .appendDays().appendSuffix(" days ago\n")
-                .appendWeeks().appendSuffix(" weeks ago\n")
-                .appendMonths().appendSuffix(" months ago\n")
-                .appendYears().appendSuffix(" years ago\n")
-                .printZeroNever()
-                .toFormatter();
+                View view = getLayoutInflater().inflate(R.layout.message_header, null);
+                CircleImageView imageView = (CircleImageView) view.findViewById(R.id.message_header_user_image);
+                TextView text = (TextView) view.findViewById(R.id.message_header_text);
+                String dateStr = String.format(getString(R.string.headerText), name);
+                dateStr = dateStr + "" + String.format(getString(R.string.dateText), df.format(date));
+                text.setText(dateStr);
 
-        String elapsed = formatter.print(period);
-        return elapsed;
+                Picasso.with(MessageActivity.this).load(url)
+                        .placeholder(R.drawable.placeholder)
+                        .into(imageView);
+                lv.addView(view);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
     }
+
 
 }

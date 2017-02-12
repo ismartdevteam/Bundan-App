@@ -307,25 +307,23 @@ public class FullscreenActivity extends FragmentActivity {
 
 
     private void addToFirebase(final JSONObject obj, final String uid) {
-        ref.child(Constants.user+"/" + uid).addListenerForSingleValueEvent(new ValueEventListener() {
+        ref.child(Constants.user + "/" + uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 UserAll userAll = dataSnapshot.getValue(UserAll.class);
                 Date date = null;
                 try {
                     date = new Date(obj.getString("birthday"));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                if (userAll != null) {
 
-                    checkUserSettings(userAll.user_settings, uid, userAll.user_info.gender,date);
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("picture", userAll.user_info.picture.get(0).toString());
-                    editor.commit();
-                    startMainAc();
-                } else {
-                    try {
+                    if (userAll != null) {
+
+                        checkUserSettings(userAll.user_settings, uid, userAll.user_info.gender, date,obj.getString("name"));
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString("picture", userAll.user_info.picture.get(0).toString());
+                        editor.commit();
+                        startMainAc();
+                    } else {
+
                         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
                         User user = new User();
 
@@ -340,7 +338,7 @@ public class FullscreenActivity extends FragmentActivity {
                         Map<String, Object> childUpdates = new HashMap<>();
                         childUpdates.put(Constants.user + "/" + uid + "/" + Constants.user_info, user.toMap());
                         childUpdates.put(Constants.user + "-" + user.gender + "/" + uid, userGender.toMap());
-                        checkUserSettings(null, uid, user.gender, date);
+                        checkUserSettings(null, uid, user.gender, date,user.name);
                         ref.updateChildren(childUpdates);
                         try {
                             uploadImage(uid, user.fb_id, user.gender);
@@ -349,10 +347,11 @@ public class FullscreenActivity extends FragmentActivity {
                             callErrorDialog();
                         }
 
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        callErrorDialog();
+
                     }
+                } catch (JSONException e) {
+                    callErrorDialog();
+                    e.printStackTrace();
                 }
             }
 
@@ -372,9 +371,10 @@ public class FullscreenActivity extends FragmentActivity {
         LoginManager.getInstance().logOut();
     }
 
-    private void checkUserSettings(UserSettings settings, final String uid, final String gender, final Date birthday) {
+    private void checkUserSettings(UserSettings settings, final String uid, final String gender, final Date birthday,final String name) {
 
         SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("name",name);
         if (settings != null) {
             editor.putString("gender", settings.gender);
             editor.putString("age_range", settings.age_range);

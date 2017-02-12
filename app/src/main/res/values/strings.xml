@@ -19,6 +19,7 @@
     <string name="facebook_img_url">http://graph.facebook.com/%s/picture?width=9999&amp;height=9999</string>
     <string name="keep_swiping">Буцах</string>
     <string name="matchText"> %s та 2 бундан хос боллоо</string>
+    <string name="headerText"> %s та хоёр </string>
     <string name="login_fb">Фейсбүүкээр нэвтрэх</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="facebook_app_id">726964594134724</string>

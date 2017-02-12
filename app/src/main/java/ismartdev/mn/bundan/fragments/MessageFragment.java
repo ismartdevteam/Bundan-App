@@ -103,7 +103,7 @@ public class MessageFragment extends Fragment {
 
     private void getMatches() {
         matchesLin.removeAllViews();
-
+        messagesLin.removeAllViews();
         ref.child(Constants.user + "/" + uid + "/" + Constants.matches).addChildEventListener(childEventListener);
     }
 
@@ -123,7 +123,7 @@ public class MessageFragment extends Fragment {
                         if (matchedModel.last_message == null) {
                             createNewMatchView(dataSnapshot.getKey(), matches.match_id);
                         } else {
-                            createNewMessageView(dataSnapshot.getKey(), matchedModel,matches.match_id);
+                            createNewMessageView(dataSnapshot.getKey(), matchedModel, matches.match_id);
                         }
                     }
                 }
@@ -215,7 +215,7 @@ public class MessageFragment extends Fragment {
     }
 
 
-    private void createNewMessageView(final String matchedUid, final MatchedModel model,final String match_id) {
+    private void createNewMessageView(final String matchedUid, final MatchedModel model, final String match_id) {
 
 
         final View view = getActivity().getLayoutInflater().inflate(R.layout.match_message_item, null);
