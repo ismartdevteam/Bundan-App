@@ -20,6 +20,7 @@
     <string name="keep_swiping">Буцах</string>
     <string name="matchText"> %s та 2 бундан хос боллоо</string>
     <string name="headerText"> %s та хоёр </string>
+    <string name="dateText">\n %s өдрөөс хойш бундан хос</string>
     <string name="login_fb">Фейсбүүкээр нэвтрэх</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="facebook_app_id">726964594134724</string>
