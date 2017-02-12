@@ -42,7 +42,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         if (remoteMessage.getNotification() != null) {
             Log.e(TAG, "notification");
             if (data != null) {
-                Log.e(TAG, data.get("matched"));
+
                 Bundle b = new Bundle();
                 if (!TextUtils.isEmpty(data.get("matched"))) {
                     b.putString("matched", remoteMessage.getData().get("matched"));

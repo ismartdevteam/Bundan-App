@@ -44,8 +44,6 @@ public class MainActivity extends BaseActivity implements SearchFragment.OnFragm
         if (sharedPreferences.getString(Constants.fcm, "").equals(""))
             checkFcm(sharedPreferences);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 

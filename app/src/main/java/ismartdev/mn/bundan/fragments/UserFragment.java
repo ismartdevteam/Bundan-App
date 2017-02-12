@@ -207,6 +207,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                 childUpdates.put(Constants.user + "/" + uid + "/" + Constants.user_settings + "/gender", Constants.getGenderEng(genders[position]));
                 ref.updateChildren(childUpdates);
                 sp.edit().putString("gender", Constants.getGenderEng(genders[position])).commit();
+                onChangeAge(true);
                 dialog.dismiss();
             }
         });

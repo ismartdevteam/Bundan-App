@@ -307,13 +307,19 @@ public class FullscreenActivity extends FragmentActivity {
 
 
     private void addToFirebase(final JSONObject obj, final String uid) {
-        ref.child(Constants.user + uid).addListenerForSingleValueEvent(new ValueEventListener() {
+        ref.child(Constants.user+"/" + uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 UserAll userAll = dataSnapshot.getValue(UserAll.class);
+                Date date = null;
+                try {
+                    date = new Date(obj.getString("birthday"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 if (userAll != null) {
 
-                    checkUserSettings(userAll.user_settings, uid, userAll.user_info.gender, new Date(userAll.user_info.birthday));
+                    checkUserSettings(userAll.user_settings, uid, userAll.user_info.gender,date);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putString("picture", userAll.user_info.picture.get(0).toString());
                     editor.commit();
@@ -322,7 +328,7 @@ public class FullscreenActivity extends FragmentActivity {
                     try {
                         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
                         User user = new User();
-                        Date date = new Date(obj.getString("birthday"));
+
                         user.birthday = df.format(date);
                         user.education = getSchool(obj.getJSONArray("education"));
                         user.email = obj.getString("email");
