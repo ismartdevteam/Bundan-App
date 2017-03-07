@@ -85,7 +85,7 @@ import me.relex.circleindicator.CircleIndicator;
 public class FullscreenActivity extends FragmentActivity {
     private static final String TAG = "FullscreenActivity";
     private FirebaseAuth mAuth;
-    private static final List<String> PERMISSIONS = Arrays.asList("public_profile", "email", "user_birthday", "user_friends", "user_likes", "user_work_history", "user_education_history");
+    private static final List<String> PERMISSIONS = Arrays.asList("public_profile", "email", "user_birthday", "user_work_history", "user_education_history");
     private CallbackManager mCallbackManager;
     private Task uploadTask;
     private SharedPreferences sharedPreferences;
@@ -313,11 +313,15 @@ public class FullscreenActivity extends FragmentActivity {
                 UserAll userAll = dataSnapshot.getValue(UserAll.class);
                 Date date = null;
                 try {
-                    date = new Date(obj.getString("birthday"));
-
+                    try {
+                        date = new Date(obj.getString("birthday"));
+                    } catch (JSONException e) {
+                        callErrorDialog(getString(R.string.error_birthday));
+                        return;
+                    }
                     if (userAll != null) {
 
-                        checkUserSettings(userAll.user_settings, uid, userAll.user_info.gender, date,obj.getString("name"));
+                        checkUserSettings(userAll.user_settings, uid, userAll.user_info.gender, date, obj.getString("name"));
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.putString("picture", userAll.user_info.picture.get(0).toString());
                         editor.commit();
@@ -338,7 +342,7 @@ public class FullscreenActivity extends FragmentActivity {
                         Map<String, Object> childUpdates = new HashMap<>();
                         childUpdates.put(Constants.user + "/" + uid + "/" + Constants.user_info, user.toMap());
                         childUpdates.put(Constants.user + "-" + user.gender + "/" + uid, userGender.toMap());
-                        checkUserSettings(null, uid, user.gender, date,user.name);
+                        checkUserSettings(null, uid, user.gender, date, user.name);
                         ref.updateChildren(childUpdates);
                         try {
                             uploadImage(uid, user.fb_id, user.gender);
@@ -364,6 +368,13 @@ public class FullscreenActivity extends FragmentActivity {
 
     }
 
+    private void callErrorDialog(String error) {
+        Toast.makeText(FullscreenActivity.this, error + "\n"+getString(R.string.error_do_again), Toast.LENGTH_LONG).show();
+        hideProgressDialog();
+        FirebaseAuth.getInstance().signOut();
+        LoginManager.getInstance().logOut();
+    }
+
     private void callErrorDialog() {
         Toast.makeText(FullscreenActivity.this, R.string.error_do_again, Toast.LENGTH_LONG).show();
         hideProgressDialog();
@@ -371,10 +382,10 @@ public class FullscreenActivity extends FragmentActivity {
         LoginManager.getInstance().logOut();
     }
 
-    private void checkUserSettings(UserSettings settings, final String uid, final String gender, final Date birthday,final String name) {
+    private void checkUserSettings(UserSettings settings, final String uid, final String gender, final Date birthday, final String name) {
 
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("name",name);
+        editor.putString("name", name);
         if (settings != null) {
             editor.putString("gender", settings.gender);
             editor.putString("age_range", settings.age_range);
