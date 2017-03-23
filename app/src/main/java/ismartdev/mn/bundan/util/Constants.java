@@ -5,7 +5,7 @@ package ismartdev.mn.bundan.util;
  */
 public class Constants {
     public static final String user = "/user";
-    public static final String url = "https://bundan-e28d3.appspot-preview.com/";
+    public static final String url = "https://us-central1-bundan-e28d3.cloudfunctions.net/";
     public static final String fcm = "fcm";
     public static final String matches = "user_info/matches/";
     public static final String user_matches = "user-matches";
