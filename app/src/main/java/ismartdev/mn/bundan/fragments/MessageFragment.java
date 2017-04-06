@@ -183,6 +183,7 @@ public class MessageFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 final User info = dataSnapshot.getValue(User.class);
                 if (info != null) {
+                    if(info.picture.size()>0)
                     Picasso.with(getActivity()).load(info.picture.get(0))
                             .placeholder(R.drawable.placeholder)
                             .into(imageView);

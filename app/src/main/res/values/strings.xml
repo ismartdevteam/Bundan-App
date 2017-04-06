@@ -36,4 +36,8 @@
 
     <string name="title_activity_match">Match</string>
     <string name="title_activity_tinder_card_detail">TinderCardDetail</string>
+    <string name="title_activity_dsadsa">dsadsa</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
 </resources>

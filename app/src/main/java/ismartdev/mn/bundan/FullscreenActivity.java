@@ -128,7 +128,8 @@ public class FullscreenActivity extends FragmentActivity {
         fbHash();
         showProgressDialog();
         mAuth = FirebaseAuth.getInstance();
-        if (mAuth.getCurrentUser() != null) {
+        Log.e("isLoggedIn",isLoggedIn()+"");
+        if (mAuth.getCurrentUser() != null && isLoggedIn()) {
             Log.d(TAG, "is logged");
             finish();
             startMainAc();
@@ -140,7 +141,10 @@ public class FullscreenActivity extends FragmentActivity {
         }
         hideProgressDialog();
     }
-
+    public boolean isLoggedIn() {
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        return accessToken != null;
+    }
     private void initWalk() {
         viewPager = (ViewPager) findViewById(R.id.walk_pager);
 
@@ -198,6 +202,7 @@ public class FullscreenActivity extends FragmentActivity {
     }
 
     private void startMainAc() {
+        hideProgressDialog();
         finish();
         startActivity(new Intent(FullscreenActivity.this, MainActivity.class));
     }
@@ -332,12 +337,26 @@ public class FullscreenActivity extends FragmentActivity {
                         User user = new User();
 
                         user.birthday = df.format(date);
-                        user.education = getSchool(obj.getJSONArray("education"));
-                        user.email = obj.getString("email");
+                         try {
+                             user.education = getSchool(obj.getJSONArray("education"));
+                         }catch (JSONException e){
+                             user.education = "";
+                         }
+                        try {
+                            user.email = obj.getString("email");
+                        }catch (JSONException e){
+                            user.email = "";
+                        }
+
                         user.gender = obj.getString("gender");
                         user.fb_id = obj.getString("id");
                         user.name = obj.getString("name");
-                        user.work = getWork(obj.getJSONArray("work"));
+                        try {
+                            user.work = getWork(obj.getJSONArray("work"));
+                        }catch (JSONException e){
+                             user.work = "";
+                        }
+
                         UserGender userGender = new UserGender(uid, user.birthday, user.fb_id, user.name, user.work);
                         Map<String, Object> childUpdates = new HashMap<>();
                         childUpdates.put(Constants.user + "/" + uid + "/" + Constants.user_info, user.toMap());
