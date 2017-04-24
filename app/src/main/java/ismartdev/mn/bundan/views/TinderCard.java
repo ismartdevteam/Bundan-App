@@ -179,7 +179,8 @@ public class TinderCard {
         call.enqueue(new Callback<MatchPost>() {
             @Override
             public void onResponse(Call<MatchPost> call, Response<MatchPost> response) {
-                if (response.body().getCode() == 200) {
+
+                if ( response.body()!=null && response.body().getCode() == 200) {
                     Log.e("Success matchPush ", response.body().toString());
                 }
             }

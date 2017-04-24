@@ -11,7 +11,7 @@ public class MatchPost {
 
     private String uid;
     @SerializedName("code")
-    private int code;
+    private int code =0;
     private String inter_uid;
 
 
@@ -23,7 +23,9 @@ public class MatchPost {
 
 
     public int getCode() {
-        return code;
+
+            return code;
+
     }
 
     public void setCode(int code) {

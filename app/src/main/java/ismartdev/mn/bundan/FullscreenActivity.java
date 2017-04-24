@@ -327,9 +327,12 @@ public class FullscreenActivity extends FragmentActivity {
                     if (userAll != null) {
 
                         checkUserSettings(userAll.user_settings, uid, userAll.user_info.gender, date, obj.getString("name"));
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putString("picture", userAll.user_info.picture.get(0).toString());
-                        editor.commit();
+                        if(userAll.user_info.picture!=null && userAll.user_info.picture.size()>0){
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.putString("picture", userAll.user_info.picture.get(0).toString());
+                            editor.commit();
+                        }
+
                         startMainAc();
                     } else {
 
