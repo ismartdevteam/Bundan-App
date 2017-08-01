@@ -105,7 +105,6 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
 
     private void sendPushNotificationMessage(String uid, final String matchID, String name, String message) {
         apiService =
-                ApiClient.getClient(Constants.url).create(ApiInterface.class);
         Call<MessagePost> call = apiService.messagePush(new MessagePost(uid, matchID, message, name));
         call.enqueue(new Callback<MessagePost>() {
             @Override
